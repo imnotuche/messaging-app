@@ -1,0 +1,80 @@
+#import modules
+import os
+from flask import Blueprint, request, jsonify
+from passlib.hash import bcrypt
+
+#import user created modules
+from modules import database
+
+#initializing route name and filepath
+auth=Blueprint("signup", __name__)
+
+#sign up route
+@auth.route("/sign-up", methods=["POST"])
+def sign_up():
+
+    data=request.get_json()
+
+    #make sure required fields exists
+    required_fields = ["name", "email", "username", "password"]
+    for field in required_fields:
+        if field not in data or not data[field]:
+            print(f"{field} is required   source: {__name__}") #log message
+            return jsonify({"message": f"{field} is required "}), 400 #frontend response
+
+    hashed = bcrypt.hash(data["password"]) #encrypt the password
+    
+    try:
+
+        conn, cursor=database.connect()
+        #create table for storing users info if it dosent exist
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                email TEXT UNIQUE,
+                username TEXT UNIQUE,
+                password TEXT,
+                profile TEXT,
+                bio TEXT,
+                online BOOLEAN
+            )
+        ''')
+
+        #check for existing email
+        cursor.execute("SELECT id FROM users WHERE email = ?", (data["email"],))
+        if cursor.fetchone():
+            print(f"Email already exists  source: {__name__}") #log message
+            return jsonify({"message": "An account with this email already exists"}), 400 #frontend response
+        
+        #check for existing username
+        cursor.execute("SELECT id FROM users WHERE username=?", (data["username"],))
+        if cursor.fetchone():
+            print(f"Username is taken  source: {__name__}") #log message
+            return jsonify({"message": f"The username '{data["username"]}' is taken"}), 400 #frontend response
+
+        #insert user info
+        cursor.execute("INSERT INTO users (name, email, username, password, profile, bio, online) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (
+                data["name"].strip(), 
+                data["email"].lower().strip(), 
+                data["username"].lower().strip(), 
+                hashed, 
+                str(os.getenv("DEFAULT_PROFILE")), 
+                "",
+                0
+            )
+        )
+        conn.commit()
+
+        print(f"successfully added {data.get('name')} to users  source: {__name__}") #log message
+        return jsonify({"message": "Sign up successful"}), 200 #frontend response
+        
+    except Exception as e:
+        print(f"error: {str(e)}  source: {__name__}") #log message
+        return jsonify({"message":"Server error"}), 500 #frontend response
+
+    finally:
+        conn.close() 
+
+

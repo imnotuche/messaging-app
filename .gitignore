@@ -1,0 +1,5 @@
+
+files/database 
+.env 
+server/modules/__pycache__
+server/routes/__pycache__
