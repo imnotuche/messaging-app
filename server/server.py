@@ -2,7 +2,8 @@ import os
 from flask import Flask, request
 from dotenv import load_dotenv
 
-from routes import sign_up, log_in
+from routes.auth import sign_up
+from routes.auth import log_in
 
 load_dotenv()
 production=os.getenv("PY_ENV")=="production"
