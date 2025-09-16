@@ -1,7 +1,9 @@
-#import modules
+#import inbuilt modules
 import os
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from passlib.hash import bcrypt
+import jwt
+from datetime import datetime, timezone, timedelta
 
 #import user created modules
 from modules import database
@@ -43,17 +45,30 @@ def log_in():
         cursor.execute("UPDATE users SET online = 1 WHERE id = ?", (user["id"],))
         conn.commit()
 
-        print(f"successfully signed in {user['name']}  source: {__name__}") #log message
-        return jsonify({
+        #create jwt
+        payload= {
+            "id": user["id"],
+            "exp": datetime.now(timezone.utc)+ timedelta(days=30) #expiry set to 30days
+        }
+        token=jwt.encode(payload, os.getenv("JWT_SECRET"), algorithm="HS256")
+
+        #response object
+        response=make_response(jsonify({
             "message":"Log in successful",
-            "payload": {
-                "name": user["name"],
-                "bio": user["bio"],
-                "username": user["username"],
-                "online": True,
-                "profile": user["profile"]
-            }
-        }) #frontend response
+        }))
+
+        #set cookie
+        response.set_cookie(
+            "logged_in",           
+            token,           
+            httponly=True,   
+            secure=os.getenv("PY_ENV")=="production",     
+            samesite="None" if os.getenv("PY_ENV")=="production" else "Lax", 
+            max_age=60*60*24*30 #expires in 30d     
+        )
+
+        print(f"successfully signed in {user['name']}  source: {__name__}") #log message
+        return  response, 200 #frontend response
         
     except Exception as e:
         print(f"Error: {e}   source: {__name__}") #log message
