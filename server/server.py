@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from routes.auth import sign_up
 from routes.auth import log_in
 from routes.auth import verify_email
+from routes.auth import logged_in
 
 #load env variables
 load_dotenv()
@@ -26,6 +27,7 @@ CORS(
 app.register_blueprint(sign_up.auth)
 app.register_blueprint(log_in.auth)
 app.register_blueprint(verify_email.verification)
+app.register_blueprint(logged_in.auth)
 
 #start server
 if __name__ == "__main__":

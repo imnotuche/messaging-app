@@ -64,7 +64,8 @@ def log_in():
             httponly=True,   
             secure=os.getenv("PY_ENV")=="production",     
             samesite="None" if os.getenv("PY_ENV")=="production" else "Lax", 
-            max_age=60*60*24*30 #expires in 30d     
+            max_age=60*60*24*30, #expires in 30d  
+            path="/"   
         )
 
         print(f"successfully signed in {user['name']}  source: {__name__}") #log message

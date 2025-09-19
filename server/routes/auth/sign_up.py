@@ -93,7 +93,8 @@ def sign_up():
             httponly=True,   
             secure=os.getenv("PY_ENV")=="production",     
             samesite="None" if os.getenv("PY_ENV")=="production" else "Lax", 
-            max_age=60*60*24*30 #expires in 30d     
+            max_age=60*60*24*30,
+            path="/" #expires in 30d   
         )
 
         print(f"successfully added {data.get('name')} to users  source: {__name__}") #log message

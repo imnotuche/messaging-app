@@ -1,8 +1,5 @@
 
 files/database 
 .env 
-server/modules/__pycache__
-server/routes/__pycache__
-server/routes/auth/__pycache__
-server/__pycache__
+__pycache__
 /test.html
