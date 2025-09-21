@@ -5,7 +5,7 @@ import secrets
 import os
 
 #import user created modules
-from modules import send_email
+from modules import send_email, database
 
 #initializing route name and filepath
 verification=Blueprint("verification", __name__)
@@ -14,12 +14,25 @@ verification=Blueprint("verification", __name__)
 @verification.route("/send-code", methods=["POST"])
 def send_code():
     data=request.get_json()
+
+    #check if account with email/username exists
+    conn, cursor=database.connect()
+    cursor.execute(
+        "SELECT * FROM users WHERE email=? OR username=?",
+        (data["email_or_username"].lower().strip(), data["email_or_username"].lower().strip())
+    )
+    user=cursor.fetchone()
+
+    if not user:
+        print(f"User not found   source:{__name__}")
+        return jsonify({"message":"Account does not exist"}), 404
+
     code = f"{secrets.randbelow(1000000):06d}" #randomly generate 6-digit number
 
     subject="Reset Your Andora Password"
     body=f"""
     
-        <p>Dear {data["name"]},</p>
+        <p>Dear {user["name"]},</p>
 
         <h1>{code}</h1>
 
@@ -28,11 +41,11 @@ def send_code():
     """ 
     #response object
     response=make_response(jsonify({
-        "message": f"Verification code has been sent to {data["email"]}"
+        "message": f"Verification code has been sent to {user["email"]}"
     }))
 
     try:
-        send_email.send_mail(data["email"], subject, body) #send email
+        send_email.send_mail(user["email"], subject, body) #send email
 
         #encrypt and store code in cookie
         hashed=bcrypt.hash(code) 
@@ -45,7 +58,7 @@ def send_code():
             max_age=60*10 #expires in 10 minutes   
         )
 
-        print(f"Verification code has been sent to {data["email"]}") #log message
+        print(f"Verification code has been sent to {user["email"]}") #log message
         return response, 200 #frontend response
 
     except Exception as e:
