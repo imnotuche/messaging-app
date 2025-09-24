@@ -3,11 +3,12 @@ from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
 
-#imprt routes
+#import routes
 from routes.auth import sign_up
 from routes.auth import log_in
 from routes.auth import verify_email
 from routes.auth import logged_in
+from routes import friends
 
 #load env variables
 load_dotenv()
@@ -28,6 +29,7 @@ app.register_blueprint(sign_up.auth)
 app.register_blueprint(log_in.auth)
 app.register_blueprint(verify_email.verification)
 app.register_blueprint(logged_in.auth)
+app.register_blueprint(friends.friend)
 
 #start server
 if __name__ == "__main__":

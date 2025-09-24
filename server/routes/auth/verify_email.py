@@ -36,7 +36,7 @@ def send_code():
 
         <h1>{code}</h1>
 
-        <p>The code above is your verification email, do not share with anyone</p>
+        <p>The code above is your verification code, do not share with anyone</p>
 
     """ 
     #response object
@@ -78,6 +78,7 @@ def verify_code():
             "verified": False
         }), 400
 
+    #compare the sent code with the one stored in cookie
     if bcrypt.verify(data["code"], hashed):
         return jsonify({
             "message": "Email verified successfully",

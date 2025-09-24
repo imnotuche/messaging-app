@@ -39,7 +39,9 @@ def sign_up():
                 password TEXT,
                 profile TEXT,
                 bio TEXT,
-                online BOOLEAN
+                online BOOLEAN,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
 
