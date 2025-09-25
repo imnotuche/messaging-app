@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Play:wght@400;700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+@import "tailwindcss";
+
+body {
+  background-color: rgba(71, 69, 69, 0.154);
+
+}
+
+.login{
+    font-family: "Play", sans-serif;
+}
