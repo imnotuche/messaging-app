@@ -16,6 +16,7 @@ auth=Blueprint("signup", __name__)
 def sign_up():
 
     data=request.get_json()
+    conn=None
 
     #make sure required fields exists
     required_fields = ["name", "email", "username", "password"]
@@ -73,14 +74,21 @@ def sign_up():
 
         #get id if the user just saved
         cursor.execute(
-            "SELECT id FROM users WHERE email = ? OR username = ?",
+            "SELECT id, email, username, bio, profile, name FROM users WHERE email = ? OR username = ?",
             (data["email"].lower().strip(), data["username"].lower().strip())
         )
         user = cursor.fetchone()
 
         #create jwt
         payload= {
-            "id": user["id"],
+            "user": {
+                "id": user["id"],
+                "name": user["name"],
+                "username": user["username"],
+                "email": user["email"],
+                "profile": user["profile"],
+                "bio": user["bio"],
+            },
             "exp": datetime.now(timezone.utc)+ timedelta(days=30) #expiry set to 30days
         }
         token=jwt.encode(payload, os.getenv("JWT_SECRET"), algorithm="HS256")
@@ -107,6 +115,7 @@ def sign_up():
         return jsonify({"message":"Server error"}), 500 #frontend response
 
     finally:
-        conn.close() 
+        if conn:
+            conn.close()
 
 

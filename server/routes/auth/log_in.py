@@ -15,6 +15,7 @@ auth=Blueprint("login", __name__)
 def log_in():
     
     data=request.get_json()
+    conn=None
 
     try:
         #make sure required fields exist
@@ -47,7 +48,14 @@ def log_in():
 
         #create jwt
         payload= {
-            "id": user["id"],
+            "user": {
+                "id": user["id"],
+                "name": user["name"],
+                "username": user["username"],
+                "email": user["email"],
+                "profile": user["profile"],
+                "bio": user["bio"],
+            },
             "exp": datetime.now(timezone.utc)+ timedelta(days=30) #expiry set to 30days
         }
         token=jwt.encode(payload, os.getenv("JWT_SECRET"), algorithm="HS256")
@@ -76,7 +84,8 @@ def log_in():
         return jsonify({"message":"Server error"}), 500 #frontend response
     
     finally:
-        conn.close()
+       if conn:
+            conn.close()
 
         
 

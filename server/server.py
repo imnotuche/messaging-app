@@ -25,11 +25,11 @@ CORS(
 )
 
 #mount imported routes
-app.register_blueprint(sign_up.auth)
-app.register_blueprint(log_in.auth)
-app.register_blueprint(verify_email.verification)
-app.register_blueprint(logged_in.auth)
-app.register_blueprint(friends.friend)
+app.register_blueprint(sign_up.auth, url_prefix="/auth")
+app.register_blueprint(log_in.auth, url_prefix="/auth")
+app.register_blueprint(verify_email.verification, url_prefix="/auth")
+app.register_blueprint(logged_in.auth, url_prefix="/auth")
+app.register_blueprint(friends.friend, url_prefix="/friends")
 
 #start server
 if __name__ == "__main__":
