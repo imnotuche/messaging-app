@@ -66,9 +66,9 @@ def send_friend_request():
         if conn:
             conn.close()
             
-#route to respond to friend request
-@friend.route("/request-respond", methods=["POST"])
-def friend_request_respond():
+#route to accept friend request
+@friend.route("/accept-request", methods=["POST"])
+def accept_request():
     data=request.get_json()
     conn=None
     
@@ -81,28 +81,20 @@ def friend_request_respond():
                 SET status = ?,
                     last_action = ?,
                     updated_at = CURRENT_TIMESTAMP
-                WHERE from_id = ? and to_id= ? and last_action= ?
+                WHERE from_id = ? and to_id= ?
             """,
             (
-                data["status"],
+                "friends",
                 int(data["user_id"]),
                 int(data["from_id"]),
-                int(data["user_id"]),
                 int(data["user_id"])
             )
         )
         
         conn.commit()
         
-        #return response depending on accepted or rejected request  
-        if data["status"]=="friends":
-            print(f"Successfully sent response    source:{__name__}") #log message
-            return jsonify({"message":f"You and @{data['from_username']} are now friends"}), 200 #frontend response
-        
-        elif data["status"]=="rejected":
-            print(f"Successfully sent response    source:{__name__}") #log message
-            return jsonify({"message":f"You rejected @{data['from_username']}'s friend request"}), 200 #frontend response
-            
+        print(f"Successfully sent response    source:{__name__}") #log message
+        return jsonify({"message":f"You and @{data['from_username']} are now friends"}), 200 #frontend response
     
     except Exception as e:
         print(f"error: {str(e)}  source: {__name__}") #log message
@@ -111,6 +103,45 @@ def friend_request_respond():
     finally:
         if conn:
             conn.close()
+            
+#route to reject friend request
+@friend.route("/reject-request", methods=["POST"])
+def reject_request():
+    data=request.get_json()
+    conn=None
+    
+    try:
+        #find and change field value in the db
+        conn, cursor=database.connect()
+        cursor.execute(
+            f"""
+                UPDATE friendships
+                SET status = ?,
+                    last_action = ?,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE from_id = ? and to_id= ?
+            """,
+            (
+                "rejected",
+                int(data["user_id"]),
+                int(data["from_id"]),
+                int(data["user_id"])
+            )
+        )
+        
+        conn.commit()
+        
+        print(f"Successfully sent response    source:{__name__}") #log message
+        return jsonify({"message":f"You rejected @{data['from_username']}'s friend request"}), 200 #frontend response
+
+    except Exception as e:
+        print(f"error: {str(e)}  source: {__name__}") #log message
+        return jsonify({"message":"Server error"}), 500 #frontend response
+    
+    finally:
+        if conn:
+            conn.close()
+    
     
     
     
