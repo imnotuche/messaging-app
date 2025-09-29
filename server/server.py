@@ -1,7 +1,11 @@
+#import inbuilt modules
 import os
 from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
+
+#import user created modules
+from modules import create_tables
 
 #import routes
 from routes.auth import sign_up
@@ -23,6 +27,9 @@ CORS(
     supports_credentials=True, 
     origins=["null", "http://127.0.0.1:5500", "http://localhost:5500"]
 )
+
+#create necessary tables
+create_tables.create_tables()
 
 #mount imported routes
 app.register_blueprint(sign_up.auth, url_prefix="/auth")

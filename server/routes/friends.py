@@ -16,20 +16,7 @@ def send_friend_request():
     #initialize db and create friendship table
     try:
         conn, cursor=database.connect()
-        cursor.execute(
-            """
-                CREATE TABLE IF NOT EXISTS friendships(
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    from_id INTEGER,
-                    to_id INTEGER,
-                    status TEXT,
-                    last_action INTEGER,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """
-        )
-        
+
         #make sure request hasnt been made
         cursor.execute(
             "SELECT * FROM friendships WHERE from_id = ? AND to_id = ? AND status = ?",
@@ -114,7 +101,7 @@ def reject_request():
         #find and change field value in the db
         conn, cursor=database.connect()
         cursor.execute(
-            f"""
+            """
                 UPDATE friendships
                 SET status = ?,
                     last_action = ?,
@@ -142,8 +129,66 @@ def reject_request():
         if conn:
             conn.close()
     
+#route to block users 
+@friend.route("/block-user", methods=["POST"])
+def block_user():
+    data=request.get_json()
+    conn=None
     
+    try:
+        conn, cursor=database.connect()
+        
+        #check if data exists in friendship table
+        cursor.execute(
+            "SELECT * FROM friendships WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?)",
+            (
+                data["user_id"],
+                data["block_user_id"],
+                data["block_user_id"],
+                data["user_id"]
+            )
+        )
+        
+        if cursor.fetchone():
+            cursor.execute(
+                """
+                    UPDATE friendships 
+                        SET status = ?,
+                        last_action = ?,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE (from_id = ? and to_id= ?) OR (from_id = ? and to_id= ?)
+                """,
+                (
+                    "blocked",
+                    data["user_id"],
+                    data["block_user_id"],
+                    data["user_id"],
+                    data["user_id"],
+                    data["block_user_id"],
+                )
+            )
+            
+        else:
+            cursor.execute(
+                "INSERT INTO friendships (from_id, to_id, status, last_action, created_at, updated_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+                    (
+                        data["user_id"],
+                        data["block_user_id"],
+                        "blocked",
+                        data["user_id"],
+                    )
+            )
+            
+        conn.commit()
+        print(f"Successfully blocked user    source:{__name__}") #log message
+        return jsonify({"message":f"You blocked @{data['blocked_username']}"}), 200 #frontend response
     
+    except Exception as e:
+        print(f"error: {str(e)}  source: {__name__}") #log message
+        return jsonify({"message":"Server error"}), 500 #frontend response
     
+    finally:
+        if conn:
+            conn.close()
     
 

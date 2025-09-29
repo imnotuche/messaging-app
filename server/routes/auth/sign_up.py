@@ -30,22 +30,7 @@ def sign_up():
     try:
 
         conn, cursor=database.connect()
-        #create table for storing users info if it dosent exist
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                email TEXT UNIQUE,
-                username TEXT UNIQUE,
-                password TEXT,
-                profile TEXT,
-                bio TEXT,
-                online BOOLEAN,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-
+        
         #check for existing email
         cursor.execute("SELECT id FROM users WHERE email = ?", (data["email"],))
         if cursor.fetchone():
