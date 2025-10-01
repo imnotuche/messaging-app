@@ -1,7 +1,9 @@
-#import modules
+#import inbuilt modules
 import os
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from passlib.hash import bcrypt
+import jwt
+from datetime import datetime, timezone, timedelta
 
 #import user created modules
 from modules import database
@@ -14,6 +16,7 @@ auth=Blueprint("signup", __name__)
 def sign_up():
 
     data=request.get_json()
+    conn=None
 
     #make sure required fields exists
     required_fields = ["name", "email", "username", "password"]
@@ -27,20 +30,7 @@ def sign_up():
     try:
 
         conn, cursor=database.connect()
-        #create table for storing users info if it dosent exist
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                email TEXT UNIQUE,
-                username TEXT UNIQUE,
-                password TEXT,
-                profile TEXT,
-                bio TEXT,
-                online BOOLEAN
-            )
-        ''')
-
+        
         #check for existing email
         cursor.execute("SELECT id FROM users WHERE email = ?", (data["email"],))
         if cursor.fetchone():
@@ -51,7 +41,7 @@ def sign_up():
         cursor.execute("SELECT id FROM users WHERE username=?", (data["username"],))
         if cursor.fetchone():
             print(f"Username is taken  source: {__name__}") #log message
-            return jsonify({"message": f"The username '{data["username"]}' is taken"}), 400 #frontend response
+            return jsonify({"message": f"The username '{data['username']}' is taken"}), 400 #frontend response
 
         #insert user info
         cursor.execute("INSERT INTO users (name, email, username, password, profile, bio, online) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -67,14 +57,50 @@ def sign_up():
         )
         conn.commit()
 
+        #get id if the user just saved
+        cursor.execute(
+            "SELECT id, email, username, bio, profile, name FROM users WHERE email = ? OR username = ?",
+            (data["email"].lower().strip(), data["username"].lower().strip())
+        )
+        user = cursor.fetchone()
+
+        #create jwt
+        payload= {
+            "user": {
+                "id": user["id"],
+                "name": user["name"],
+                "username": user["username"],
+                "email": user["email"],
+                "profile": user["profile"],
+                "bio": user["bio"],
+            },
+            "exp": datetime.now(timezone.utc)+ timedelta(days=30) #expiry set to 30days
+        }
+        token=jwt.encode(payload, os.getenv("JWT_SECRET"), algorithm="HS256")
+
+        #response object
+        response=make_response(jsonify({"message": "Sign up successful"}))
+
+        #set cookie
+        response.set_cookie(
+            "logged_in",           
+            token,           
+            httponly=True,   
+            secure=os.getenv("PY_ENV")=="production",     
+            samesite="None" if os.getenv("PY_ENV")=="production" else "Lax", 
+            max_age=60*60*24*30,
+            path="/" #expires in 30d   
+        )
+
         print(f"successfully added {data.get('name')} to users  source: {__name__}") #log message
-        return jsonify({"message": "Sign up successful"}), 200 #frontend response
+        return response, 200 #frontend response
         
     except Exception as e:
         print(f"error: {str(e)}  source: {__name__}") #log message
         return jsonify({"message":"Server error"}), 500 #frontend response
 
     finally:
-        conn.close() 
+        if conn:
+            conn.close()
 
 
