@@ -28,16 +28,18 @@ def create_tables():
         #friendships table
         cursor.execute(
             """
-                    CREATE TABLE IF NOT EXISTS friendships(
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        from_id INTEGER,
-                        to_id INTEGER,
-                        status TEXT,
-                        last_action INTEGER,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    )
-                """
+                CREATE TABLE IF NOT EXISTS friendships(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_1 INTEGER,
+                    user_2 INTEGER,
+                    status TEXT,
+                    blocked TEXT DEFAULT NULL,
+                    last_action INTEGER,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(user_1, user_2)
+                )
+            """
         )
         
         conn.commit()
