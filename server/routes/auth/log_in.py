@@ -28,7 +28,7 @@ def log_in():
         conn, cursor=database.connect()    
         #search for existing account
         cursor.execute(
-            "SELECT * FROM users WHERE email = ? OR username = ?",
+            "SELECT id, password, name FROM users WHERE email = ? OR username = ?",
             (data["email_or_username"].lower().strip(), data["email_or_username"].lower().strip())
         )
         user = cursor.fetchone()
@@ -49,12 +49,7 @@ def log_in():
         #create jwt
         payload= {
             "user": {
-                "id": user["id"],
-                "name": user["name"],
-                "username": user["username"],
-                "email": user["email"],
-                "profile": user["profile"],
-                "bio": user["bio"],
+                "id": user["id"]
             },
             "exp": datetime.now(timezone.utc)+ timedelta(days=30) #expiry set to 30days
         }
@@ -82,11 +77,11 @@ def log_in():
     except Exception as e:
         print(f"Error: {e}   source: {__name__}") #log message
         return jsonify({"message":"Server error"}), 500 #frontend response
-    
+
     finally:
-       if conn:
+        if conn:
             conn.close()
 
-        
+
 
 

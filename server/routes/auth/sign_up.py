@@ -59,20 +59,15 @@ def sign_up():
 
         #get id if the user just saved
         cursor.execute(
-            "SELECT id, email, username, bio, profile, name FROM users WHERE email = ? OR username = ?",
+            "SELECT id FROM users WHERE email = ? OR username = ?",
             (data["email"].lower().strip(), data["username"].lower().strip())
         )
-        user = cursor.fetchone()
+        id = cursor.fetchone()
 
         #create jwt
         payload= {
             "user": {
-                "id": user["id"],
-                "name": user["name"],
-                "username": user["username"],
-                "email": user["email"],
-                "profile": user["profile"],
-                "bio": user["bio"],
+                "id": id
             },
             "exp": datetime.now(timezone.utc)+ timedelta(days=30) #expiry set to 30days
         }
