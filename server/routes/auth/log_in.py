@@ -43,7 +43,7 @@ def log_in():
             print(f"Incorrect password   source:{__name__}")
             return jsonify({"message":"Incorrect password"}), 401
         
-        cursor.execute("UPDATE users SET online = 1 WHERE id = ?", (user["id"],))
+        cursor.execute("UPDATE users SET last_seen = CURRENT_TIMESTAMP WHERE id = ?", (user["id"],))
         conn.commit()
 
         #create jwt

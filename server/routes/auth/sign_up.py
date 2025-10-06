@@ -44,15 +44,14 @@ def sign_up():
             return jsonify({"message": f"The username '{data['username']}' is taken"}), 400 #frontend response
 
         #insert user info
-        cursor.execute("INSERT INTO users (name, email, username, password, profile, bio, online) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        cursor.execute("INSERT INTO users (name, email, username, password, profile, bio, last_seen) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)",
             (
                 data["name"].strip(), 
                 data["email"].lower().strip(), 
                 data["username"].lower().strip(), 
                 hashed, 
                 str(os.getenv("DEFAULT_PROFILE")), 
-                "",
-                0
+                ""
             )
         )
         conn.commit()

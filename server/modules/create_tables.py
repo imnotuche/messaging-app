@@ -18,7 +18,7 @@ def create_tables():
                     password TEXT,
                     profile TEXT,
                     bio TEXT,
-                    online BOOLEAN,
+                    last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
