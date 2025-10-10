@@ -6,7 +6,7 @@ import jwt
 from datetime import datetime, timezone, timedelta
 
 #import user created modules
-from modules import database
+from modules.database_modules import database
 
 #initializing route name and filepath
 auth=Blueprint("signup", __name__)
@@ -33,13 +33,17 @@ def sign_up():
         
         #check for existing email
         cursor.execute("SELECT id FROM users WHERE email = ?", (data["email"],))
-        if cursor.fetchone():
+        existing_email=cursor.fetchone()
+        
+        if existing_email:
             print(f"Email already exists  source: {__name__}") #log message
             return jsonify({"message": "An account with this email already exists"}), 400 #frontend response
         
         #check for existing username
         cursor.execute("SELECT id FROM users WHERE username=?", (data["username"],))
-        if cursor.fetchone():
+        existing_username=cursor.fetchone()
+        
+        if existing_username:
             print(f"Username is taken  source: {__name__}") #log message
             return jsonify({"message": f"The username '{data['username']}' is taken"}), 400 #frontend response
 
@@ -61,7 +65,8 @@ def sign_up():
             "SELECT id FROM users WHERE email = ? OR username = ?",
             (data["email"].lower().strip(), data["username"].lower().strip())
         )
-        id = cursor.fetchone()
+        row = cursor.fetchone()
+        id=row["id"]
 
         #create jwt
         payload= {

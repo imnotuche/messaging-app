@@ -5,7 +5,8 @@ import secrets
 import os
 
 #import user created modules
-from modules import send_email, database
+from modules import send_email
+from modules.database_modules import database
 
 #initializing route name and filepath
 verification=Blueprint("verification", __name__)

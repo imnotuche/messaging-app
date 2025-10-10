@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 #creating directory for db storage
-project_dir = Path(__file__).parent.parent.parent
+project_dir = Path(__file__).parent.parent.parent.parent
 files_dir = project_dir / "files"/ "database"
 os.makedirs(files_dir, exist_ok=True)
 db_path=os.path.join(files_dir, os.getenv("DB_NAME"))

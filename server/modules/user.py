@@ -1,5 +1,5 @@
 #import user defined modules
-from modules import database
+from modules.database_modules import database
 
 #this class represents the user
 #think of it like a store but in the backend

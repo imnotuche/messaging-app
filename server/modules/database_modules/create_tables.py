@@ -1,5 +1,5 @@
 #import user defined modules
-from modules import database
+from modules.database_modules import database
 
 def create_tables():
     #create all tables
@@ -11,6 +11,7 @@ def create_tables():
         cursor.execute(
             '''
                 CREATE TABLE IF NOT EXISTS users (
+                    
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT,
                     email TEXT UNIQUE,
@@ -43,6 +44,7 @@ def create_tables():
         )
         
         conn.commit()
+        print("Tables created")
         
     except Exception as e:
         print(f"{e}    source:{__name__}") #log message

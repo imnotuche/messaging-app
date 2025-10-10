@@ -6,7 +6,7 @@ import jwt
 from datetime import datetime, timezone, timedelta
 
 #import user created modules
-from modules import database
+from modules.database_modules import database
 
 #initializing route name and filepath
 auth=Blueprint("login", __name__)

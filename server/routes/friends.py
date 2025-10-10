@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request
 import json
 
 #import user created modules
-from modules import database
+from modules.database_modules import database
 
 #initialzing route name and filepath
 friend=Blueprint("friend", __name__)
