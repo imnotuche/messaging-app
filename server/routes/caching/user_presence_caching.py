@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify
 
 #import user created files
 from modules.database_modules import database
-from modules.caching import online_user_caching
+from modules.caching import online_presence_caching
 
 #initializing route name and filepath
 cache=Blueprint("caching", __name__)
@@ -27,7 +27,7 @@ def set_online(id):
             return jsonify({"message": "Not found"}), 404
         
         #load into redis db
-        online_user_caching.set_online_status(id)
+        online_presence_caching.set_online_status(id)
         print(f"{username[0]} online status saved to cache") #log
         return jsonify({"message": "Success"}), 200 #frontend response
         
