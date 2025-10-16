@@ -12,20 +12,36 @@ r = redis.Redis(
 
 #store user data in redis
 def set_user_data(data):
-    key = f"user:{data['user_id']}"
-    r.set(key, json.dumps(data))
-    r.expire(key, 3600)
+    try:
+        key = f"user:{data['user_id']}"
+        
+        #check for existing data
+        existing=r.get(key)
+        if existing:
+            print(f"{key} already exists in memory    source: {__name__}")
+            raise Exception(f"{key} already exists in memory")
+        
+        r.set(key, json.dumps(data))
+        r.expire(key, 3600)
+        print(f"{key} loaded into memory")
+    except Exception as e:
+        print(f"{e}    source: {__name__}")
+        raise Exception(f"{e}")
 
 #fetch and return user data in redis
 def fetch_user_data(id):
-    key=f"user:{id}"
-    raw=r.get(key)
-    
-    if raw is None:
-        return None
-    
-    data=json.loads(raw)
-    r.expire(key, 3600) #reset expiry
-    return data
+    try:
+        key=f"user:{id}"
+        raw=r.get(key)
+        
+        if raw is None:
+            return None
+        
+        data=json.loads(raw)
+        r.expire(key, 3600) #reset expiry
+        return data
+    except Exception as e:
+        print(f"{e}    source: {__name__}")
+        raise Exception(f"{e}")
 
 

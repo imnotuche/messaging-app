@@ -18,6 +18,7 @@ from routes.auth import verify_email
 from routes.auth import logged_in
 from routes import friends
 from routes.caching import user_presence_caching
+from routes import user
 
 #load env variables
 load_dotenv()
@@ -52,7 +53,7 @@ create_tables.create_tables()
 #run thread to handle redis key expiry to track online users
 t = threading.Thread(
     target=redis_notifications.listen_for_expired_keys,
-    args=(int(os.getenv("ONLINE_DB")), socketio),
+    args=(int(os.getenv("ONLINE_USER_DB")), socketio),
     daemon=True 
 )
 t.start()
@@ -64,6 +65,7 @@ app.register_blueprint(verify_email.verification, url_prefix="/auth")
 app.register_blueprint(logged_in.auth, url_prefix="/auth")
 app.register_blueprint(friends.friend, url_prefix="/friends")
 app.register_blueprint(user_presence_caching.cache, url_prefix="/cache")
+app.register_blueprint(user.user, url_prefix="/user")
 
 #start server
 if __name__ == "__main__":
