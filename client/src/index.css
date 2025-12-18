@@ -5,3 +5,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+*{
+    @apply box-border;
+}
+
+body {
+    @apply h-screen flex justify-center items-center;
+    @apply font-sans;
+}
