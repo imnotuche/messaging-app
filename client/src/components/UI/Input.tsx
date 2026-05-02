@@ -15,8 +15,11 @@ function Input({
             h-[40px] w-[100%]
             pl-[10px] mb-[10px]
             rounded-[5px]
-            focus:outline-none placeholder:text-sm
-            text-sm font-medium`,
+            border border-[#e0c8b8]
+            focus:outline-none 
+            placeholder:text-xs lg:placeholder:text-sm
+            placeholder-[#a07050]
+            text-sm text-[#3a1a0a] font-medium`,
             className
 
         )}/>
