@@ -3,8 +3,12 @@ import Button from "../UI/Button";
 
 import { useState } from "react";
 
+type SignUpProps = {
+    isLogin: boolean;
+    setIsLogin: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-function SignUp(){
+function SignUp({ isLogin, setIsLogin } : SignUpProps){
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -12,18 +16,24 @@ function SignUp(){
 
         <>
         
-            <div className="
+            <div className={`
                 flex flex-col
                 justify-center items-center
                 w-[100%] h-[100%]
-            ">
+                absolute top-0 left-0
+                transition-all duration-1000 md:duration-500 ease
+                md:translate-y-0
+                ${isLogin ? 'opacity-[0%] pointer-events-none -translate-y-[400px]' : 
+                    'opacity-[100%] translate-y-0'}
+                ${isLogin ? '' : 'md:delay-500'}
+            `}>
 
                 <h1 className="
                     lg:hidden
                     text-l font-semibold text-[#a07050]
                     w-[100%]
                     mb-[40px] 
-                    px-2 md:px-8
+                    px-8
                 ">
                     Get started with <br />
                     <span className="
@@ -96,16 +106,16 @@ function SignUp(){
                     </div>
 
                     <Button type="submit" className="
-                        mt-[30px] mb-[10px]
+                        mt-[30px] mb-[20px]
                     ">SIGN UP</Button>
 
                     <span className="
                         md:hidden
                         text-xs text-[#a07050]
                     ">
-                        Already have an account? <a href="" className="
+                        Already have an account? <button type = "button" className="
                             text-[#7a4028]
-                        ">Sign in</a>
+                        " onClick={() => setIsLogin((prev : boolean) => !prev)}>Sign in</button>
                     </span>
 
                 </form>
