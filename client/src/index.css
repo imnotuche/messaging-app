@@ -14,3 +14,47 @@ body {
     @apply h-screen flex justify-center items-center;
     @apply font-sans;
 }
+
+@layer utilities {
+    .scrollbar-dark::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .scrollbar-dark::-webkit-scrollbar-track {
+        background: #01040a;
+    }
+
+    .scrollbar-dark::-webkit-scrollbar-thumb {
+        background: #2a1208;
+    }
+
+    .scrollbar-dark::-webkit-scrollbar-thumb:hover {
+        background: #3d1a08;
+    }
+
+    .scrollbar-light::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .scrollbar-light::-webkit-scrollbar-track {
+        background: #f5ede6;
+    }
+
+    .scrollbar-light::-webkit-scrollbar-thumb {
+        background: #e0c8b8;
+    }
+
+    .scrollbar-light::-webkit-scrollbar-thumb:hover {
+        background: #dbc9b4;
+    }
+
+    .scrollbar-dark {
+        scrollbar-width: thin;
+        scrollbar-color: #2a1208 #01040a;
+    }
+
+    .scrollbar-light {
+        scrollbar-width: thin;
+        scrollbar-color: #e0c8b8 #f5ede6;
+    }
+}
