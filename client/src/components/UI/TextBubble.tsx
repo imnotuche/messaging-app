@@ -42,8 +42,9 @@ function TextBubble({
 
                 <div className={twMerge(`
                     relative
-                    w-fit max-w-80
-                    rounded-lg p-3 pb-2 text-sm
+                    w-fit md:max-w-52 lg:max-w-80
+                    rounded-lg p-3 pb-2 
+                    md:text-xs lg:text-sm
                     cursor-pointer
                     ${isMe ? 'bg-[#240f04]' : 
                         'bg-[#ecddd4] #ecddd4 border border-[#e0c8b8]'}
@@ -59,11 +60,42 @@ function TextBubble({
 
                     <div className={`
                         text-[#8c6a56]
-                        text-xs font-semibold
+                        md:text-[10px] lg:text-xs font-semibold
                         flex justify-end
                         h-fit w-full
                     `}>
+
                         <p>3:41</p>
+
+                        <svg className="
+                            size-4 
+                            hidden ml-1
+                        "
+                            xmlns="http://www.w3.org/2000/svg" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            stroke-width="2" stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                        >
+                            <path d="M18 6 7 17l-5-5"/>
+                            <path d="m22 10-7.5 7.5L13 16"/>
+                        </svg>
+
+                        <svg className="
+                            md:size-[14px] lg:size-4
+                            ml-1
+                        "
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="24" height="24" viewBox="0 0 24 24" 
+                            fill="none" stroke="currentColor" 
+                            stroke-width="2" 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round"
+                        >
+                            <path d="M20 6 9 17l-5-5"/>
+                        </svg>
+
                     </div>
 
                     <div className={`

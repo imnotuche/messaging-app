@@ -5,23 +5,19 @@ function ProtectedLayout(){
 
     return (
 
-        <div className="flex">
-
-            <div className="
-                bg-[#240f04]
-                flex
-                w-screen h-screen
+        <div className="
+            bg-[#240f04] 
+            flex flex-col-reverse lg:flex-row
+            w-screen h-screen
+        ">
+            
+            <SideBar/>
+            <main className="
+                flex flex-1
+                md:h-[calc(100%-56px)] lg:h-full w-full
             ">
-                
-                <SideBar/>
-                <main className="
-                    flex flex-1
-                    h-[100%] w-[100%]
-                ">
-                    <Outlet/>
-                </main>
-
-            </div>
+                <Outlet/>
+            </main>
 
         </div>
 
