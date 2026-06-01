@@ -7,13 +7,16 @@ function ChatUI(){
 
         <>
             <div className="
-                md:flex flex-1
-                w-full lg:h-full
-                p-3 md:pb-0 lg:pb-3 lg:pl-0               
+                overflow-hidden
+                relative md:static
+                flex flex-1
+                w-full
+                m-2.5 md:m-3 mb-0 md:mb-0 lg:mb-3 lg:ml-0            
             ">
 
                 <CurrentChat/>
                 {/*<AllChats/>*/}
+                <AllChats/>
                 
             </div>
         </>

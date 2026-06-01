@@ -28,23 +28,23 @@ function TextBubble({
 
             <div className={`
                 flex items-end w-full
-                ${isLast ? 'mb-5' : ''}
+                ${isLast ? 'mb-2 lg:mb-5' : ''}
                 ${isMe ? 'justify-end' : 'justify-start'}
             `}>
 
                 <Avatar containerClassName={`
                     ${!isMe && isLast ? 'mr-6 inline-block' : 'hidden'}
                 `} imageClassName="
-                    h-8 rounded-lg 
+                    h-7 md:h-8 rounded-lg 
                 " onlineIndicatorClassName="
                     hidden
                 " imageSrc={imageSrc}/>
 
                 <div className={twMerge(`
                     relative
-                    w-fit md:max-w-52 lg:max-w-80
+                    w-fit max-w-44 md:max-w-52 lg:max-w-80
                     rounded-lg p-3 pb-2 
-                    md:text-xs lg:text-sm
+                    text-xs lg:text-sm
                     cursor-pointer
                     ${isMe ? 'bg-[#240f04]' : 
                         'bg-[#ecddd4] #ecddd4 border border-[#e0c8b8]'}
@@ -60,7 +60,7 @@ function TextBubble({
 
                     <div className={`
                         text-[#8c6a56]
-                        md:text-[10px] lg:text-xs font-semibold
+                        text-[10px] lg:text-xs font-semibold
                         flex justify-end
                         h-fit w-full
                     `}>
@@ -83,7 +83,7 @@ function TextBubble({
                         </svg>
 
                         <svg className="
-                            md:size-[14px] lg:size-4
+                            size-[14px] lg:size-4
                             ml-1
                         "
                             xmlns="http://www.w3.org/2000/svg" 
@@ -121,7 +121,7 @@ function TextBubble({
                 <Avatar containerClassName={`
                     ${isMe && isLast ? 'ml-6 inline-block' : 'hidden'}
                 `} imageClassName="
-                    h-8 rounded-lg 
+                    h-7 md:h-8 rounded-lg 
                 " onlineIndicatorClassName="
                     hidden
                 " imageSrc={imageSrc}/>
@@ -139,6 +139,8 @@ export function TypingBubble({
     bubbleClassName,
 }: TypingBubbleProps){
 
+    const arr = [0,1,2]
+
     return (
     
         <>
@@ -150,7 +152,7 @@ export function TypingBubble({
                 <Avatar containerClassName={`
                     'inline-block
                 `} imageClassName="
-                    h-8 rounded-lg 
+                    h-7 md:h-8 rounded-lg 
                 " onlineIndicatorClassName="
                     hidden
                 " imageSrc={imageSrc}/>
@@ -159,28 +161,21 @@ export function TypingBubble({
                     bg-[#ecddd4] border border-[#e0c8b8]
                     flex justify-center items-center
                     gap-1
-                    w-14 h-7
+                    w-12 md:w-14 md:h-7
                     rounded-[16px] p-2
                     ml-2      
                 `, bubbleClassName)}>
 
-                    <div className={`
-                        bg-[#3a1a0a]
-                        h-2 aspect-square
-                        rounded-full
-                    `}></div>
+                    {arr.map(() => (
 
-                    <div className={`
-                        bg-[#3a1a0a]
-                        h-2 aspect-square
-                        rounded-full
-                    `}></div>
+                        <div className={`
+                            bg-[#3a1a0a]
+                            h-1.5 md:h-2 aspect-square
+                            rounded-full
+                        `}></div>
 
-                    <div className={`
-                        bg-[#3a1a0a]
-                        h-2 aspect-square
-                        rounded-full
-                    `}></div>
+                    ))}
+                        
 
                 </div>
 

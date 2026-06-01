@@ -5,37 +5,70 @@ import Button from "../UI/Button";
 function AllChats(){
 
     const [chatListExpand, setChatListExpand] = useState (false);
+    const [chatListVisible, setChatListVisible] = useState (false)
 
     return (
 
         <>
 
             <div className={`
-                bg-[#f5ede6]
-                relative overflow-hidden
+                bg-[#f5ede6] shadow-[0_8px_32px_#240f042e]
+                absolute md:relative z-10 md:z-0
+                right-3 md:right-0 bottom-1/2 md:bottom-0
+                translate-y-1/2 md:translate-y-0 md:translate-x-0
                 flex flex-col items-center
-                h-full lg:w-[30%]
-                border-l border-[#240f04] rounded-xl 
-                ml-3
+                h-[90%] md:h-full w-[80%] lg:w-[30%]
+                rounded-xl border border-[#a07050]/50 md:border-none
+                md:ml-3
                 transition-all duration-300 ease
                 ${chatListExpand ? 'md:w-[35%]' : 'md:w-[10%]'}
+                ${chatListVisible ? 'translate-x-0' : 'translate-x-[calc(100%+10px)]'}
             `}>
 
                 <div className={`
                     bg-[#8c6a56]/10 backdrop-blur-sm
                     absolute top-0
                     flex items-center lg:justify-start
-                    w-full h-16
+                    w-full h-14 md:h-16
+                    rounded-t-xl 
                     md:text-lg lg:text-xl font-semibold
                     ${chatListExpand ? 'md:justify-start' : 'md:justify-center'}
                 `}>
 
                     <Button className={`
-                        bg-[#f0dcc8]/0
-                        md:flex lg:hidden 
+                        bg-[#240f04]
+                        absolute
+                        flex md:hidden
+                        -translate-x-full md:translate-x-0
                         justify-center items-center
-                        md:w-10 md:h-10
-                        rounded-xl shrink-0
+                        w-6 h-8
+                        rounded-r-none rounded-l-xl
+                    `}
+                        onClick={() => {
+                            setChatListVisible(p => !p)
+                        }}
+                    >
+                        <svg className={`
+                            size-4 text-[#f5ede6] 
+                            transition-all duration-300 ease
+                            ${chatListVisible ? '' : 'rotate-180'}
+                        `}
+                            xmlns="http://www.w3.org/2000/svg" 
+                            fill="none" 
+                            viewBox="0 0 24 24" 
+                            stroke-width="3" 
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
+
+                    </Button> 
+
+                    <Button className={`
+                        bg-[#f0dcc8]/0
+                        hidden md:flex lg:hidden 
+                        justify-center items-center
+                        w-10 h-10
+                        rounded-full shrink-0
                     `}
                         onClick={() => {
                             setChatListExpand(p => !p);
@@ -58,7 +91,7 @@ function AllChats(){
 
                     <p className={`
                         lg:block 
-                        md:ml-2 lg:ml-8
+                        ml-4 md:ml-2 lg:ml-8
                         lg:translate-x-0 lg:opacity-100
                         transition-all duration-300 ease
                         ${chatListExpand ? 'translate-x-0 md:block': 
@@ -71,7 +104,7 @@ function AllChats(){
                     flex-1 w-full
                     overflow-y-scroll
                     scrollbar-light
-                    my-16 p-3
+                    my-12 md:my-16 p-3
                 ">
 
                     <div className="
@@ -86,25 +119,27 @@ function AllChats(){
                         `}>
 
                             <Avatar imageClassName="
-                                md:h-10 lg:h-12
+                                h-9 md:h-10 lg:h-12
                             " />
 
                             <div className={`
-                                lg:block lg:opacity-100
-                                lg:translate-x-0
+                                block lg:block 
+                                opacity-100 lg:opacity-100
+                                translate-x-0 lg:translate-x-0
                                 w-[70%] ml-2
-                                ${chatListExpand ? 'translate-x-0 opacity-100 md:block': 'translate-x-[500px] opacity-0 md:hidden'}
+                                ${chatListExpand ? 'md:translate-x-0 opacity-100 md:block': 'md:translate-x-[500px] opacity-0 md:hidden'}
                             `}>
 
                                 <p className="
-                                    text-m font-semibold text-[#240f04]
+                                    text-sm md:text-m 
+                                    font-semibold text-[#240f04]
                                     truncate
                                     leading-5
                                     mb-[2px]
                                 ">Nobody</p>
 
                                 <p className="
-                                    md:text-xs lg:text-sm 
+                                    text-xs lg:text-sm 
                                     font-medium text-[#a07050]
                                     truncate
                                     leading-5
@@ -112,7 +147,7 @@ function AllChats(){
 
                                     <svg className="
                                         hidden 
-                                        md:size-3.5 lg:size-4 ml-1
+                                        size-3 md:size-3.5 lg:size-4 ml-1
                                     "
                                         xmlns="http://www.w3.org/2000/svg" 
                                         viewBox="0 0 24 24" 
@@ -127,7 +162,7 @@ function AllChats(){
 
                                     <svg className="
                                         inline 
-                                        md:size-3.5 lg:size-4 mr-1
+                                        size-3.5 lg:size-4 mr-1
                                     "
                                         xmlns="http://www.w3.org/2000/svg" 
                                         width="24" height="24" viewBox="0 0 24 24" 
@@ -145,24 +180,25 @@ function AllChats(){
                             </div>
 
                             <div className={`
-                                lg:flex
+                                flex lg:flex
                                 flex-col flex-1
-                                justify-center items-end lg:opacity-100
-                                lg:translate-x-0
-                                ${chatListExpand ? 'translate-x-0 opacity-100 md:flex': 'translate-x-[500px] opacity-0 md:hidden'}
+                                justify-center items-end 
+                                opacity-100 lg:opacity-100
+                                translate-x-0 lg:translate-x-0
+                                ${chatListExpand ? 'md:translate-x-0 opacity-100 md:flex': 'md:translate-x-[500px] opacity-0 md:hidden'}
                             `}>
                                 <p className="
-                                    md:text-xs lg:text-sm 
+                                    text-xs lg:text-sm 
                                     font-semibold text-[#a07050]
                                 ">3:41</p>
 
                                 <div className="
                                     bg-[#240f04]
                                     flex justify-center items-center
-                                    md:h-5 lg:h-6 aspect-square
+                                    h-5 lg:h-6 aspect-square
                                     pb-[2px] my-[2px]
                                     rounded-full
-                                    md:text-xs lg:text-sm 
+                                    text-xs lg:text-sm 
                                     font-semibold text-[#f5ede6]
                                 ">2</div>
 
@@ -179,6 +215,7 @@ function AllChats(){
                     bg-[linear-gradient(to_bottom,#f5ede600_0%,#f5ede6_90%)]
                     absolute bottom-0
                     flex items-center
+                    rounded-b-xl 
                     w-full h-12
                 "></div>
 

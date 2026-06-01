@@ -14,7 +14,7 @@ function ProtectedLayout(){
             <SideBar/>
             <main className="
                 flex flex-1
-                md:h-[calc(100%-56px)] lg:h-full w-full
+                h-[calc(100%-56px)] lg:h-full w-full
             ">
                 <Outlet/>
             </main>

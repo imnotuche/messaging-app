@@ -24,8 +24,8 @@ function CurrentChat(){
                 bg-[#f5ede6]
                 relative overflow-hidden
                 flex flex-col
-                h-full md:flex-1 lg:w-[70%]
-                rounded-xl 
+                w-full md:flex-1 lg:w-[70%]
+                h-full rounded-xl 
             ">
                 
                 <div className="
@@ -33,7 +33,7 @@ function CurrentChat(){
                     absolute
                     z-10
                     flex items-center
-                    w-full md:h-16 lg:h-[88px]
+                    w-full h-16 lg:h-[88px]
                 ">
 
                     <Avatar containerClassName="
@@ -41,23 +41,23 @@ function CurrentChat(){
                     " onlineIndicatorClassName="
                         hidden
                     " imageClassName="
-                        md:h-10 lg:h-14
+                        h-9 md:h-10 lg:h-14
                     "/>
 
                     <div>
 
                         <p className="
                             text-[#240f04]
-                            md:text-sm lg:text-xl 
+                            text-sm lg:text-xl 
                             font-semibold
-                            leading-6
+                            md:leading-5
                         ">Somebody</p>
 
                         <p className="
                             text-[#a87c5e]
-                            md:text-xs lg:text-base 
+                            text-xs lg:text-base 
                             font-medium
-                            leading-5
+                            md:leading-4
                         ">online</p>
 
                     </div>
@@ -67,11 +67,11 @@ function CurrentChat(){
                 <div className="
                     overflow-y-auto scrollbar-light
                     w-full flex-1
-                    md:p-3 lg:p-5 pt-24 pb-24
+                    p-1 md:p-3 lg:p-5
                 ">
 
                     <div className="
-                        w-full
+                        w-full pt-20 md:pt-[85px] pb-20
                     ">
 
                         <TextBubble isMe={false} isLast={false} textContent="
@@ -109,28 +109,28 @@ function CurrentChat(){
                     absolute bottom-0
                     z-10
                     flex items-center justify-center
-                    w-full p-5
+                    w-full p-2 md:p-5
                 ">
 
                     <div className="
                         flex items-center overflow-hidden
-                        w-[70%]
+                        w-[80%] md:w-[70%]
                     ">
 
                         <div className="
                             bg-white
                             flex items-center
                             flex-1 
-                            py-2 mr-4 
+                            py-2 mr-2 md:mr-4 
                             border border-[#e0c8b8] rounded-[7px]
                         ">
 
                             <textarea className="
                                 text-[#3a1a0a] font-medium
-                                md:text-xs lg:text-base
+                                text-xs lg:text-base
                                 placeholder:font-medium
                                 placeholder-[#a07050] 
-                                md:placeholder:text-xs lg:placeholder:text-base
+                                placeholder:text-xs lg:placeholder:text-base
                                 max-h-28 w-full
                                 resize-none overflow-y-auto
                                 scrollbar-light 
@@ -146,13 +146,13 @@ function CurrentChat(){
                         </div>
 
                         <Button className="
-                            md:h-[35px] lg:h-[40px] md:w-[35px] lg:w-[40px]
+                            h-[33px] md:h-[35px] lg:h-[40px] w-[33px] md:w-[35px] lg:w-[40px]
                             rounded-[7px]
                             pl-[2px]
                         ">
 
                             <svg className="
-                                md:size-4 lg:size-5 text-[#f0dcc8]
+                                size-4 lg:size-5 text-[#f0dcc8]
                             "
                                 xmlns="http://www.w3.org/2000/svg" 
                                 fill="none" viewBox="0 0 24 24" 
