@@ -1,3 +1,6 @@
+import { useNavigate } from "react-router-dom";
+import { signUp } from "../../services/authService";
+
 import Input from "../UI/Input";
 import Button from "../UI/Button";
 
@@ -10,7 +13,35 @@ type SignUpProps = {
 
 function SignUp({ isLogin, setIsLogin } : SignUpProps){
 
+    const navigate = useNavigate();
+
     const [showPassword, setShowPassword] = useState(false);
+
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [userName, setUserName] = useState("");
+    const [password, setPassword] = useState("");
+
+    const user = {
+        name,
+        email,
+        username: userName,
+        password
+    }
+
+    const handleFormSubmit = async (e: React.FormEvent) => {
+
+        e.preventDefault(); //prevent default form action
+        try {
+
+            await signUp(user); //register user
+            navigate('/chat'); //navigate to chat route on success
+        
+        } catch (err) {
+            console.error("Login failed");
+        }
+
+    }
 
     return (
 
@@ -52,11 +83,24 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
                 <form className="
                     flex flex-col items-center
                     lg:w-[300px]
-                ">
+                "
+                onSubmit={handleFormSubmit}
+                >
 
-                    <Input type="text" placeholder="Name"></Input>
-                    <Input type="email" placeholder="Email"></Input>
-                    <Input type="text" placeholder="Username"></Input>
+                    <Input type="text" placeholder="Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    ></Input>
+
+                    <Input type="email" placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    ></Input>
+
+                    <Input type="text" placeholder="Username"
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    ></Input>
 
                     <div className="
                         flex
@@ -69,7 +113,10 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
                             rounded-none border-none
                             w-[100%] h-[100%] m-0
                             text-[#a07050]
-                        "></Input>
+                        "
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        ></Input>
 
                         <Button type="button" className="
                             lg:pb-[0.4rem] pl-[0.1rem]
@@ -107,7 +154,8 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
 
                     <Button type="submit" className="
                         mt-[30px] mb-[20px]
-                    ">SIGN UP</Button>
+                    "
+                    >SIGN UP</Button>
 
                     <span className="
                         md:hidden

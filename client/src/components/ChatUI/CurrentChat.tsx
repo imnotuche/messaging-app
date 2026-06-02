@@ -37,7 +37,7 @@ function CurrentChat(){
                 ">
 
                     <Avatar containerClassName="
-                        mx-5
+                        mx-3 lg:mx-5
                     " onlineIndicatorClassName="
                         hidden
                     " imageClassName="

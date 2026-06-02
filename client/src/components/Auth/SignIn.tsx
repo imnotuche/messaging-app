@@ -1,3 +1,6 @@
+import { useNavigate } from 'react-router-dom';
+import { signIn } from "../../services/authService";
+
 import Input from "../UI/Input";
 import Button from "../UI/Button";
 
@@ -10,12 +13,39 @@ type SignInProps = {
 
 function SignIn({ isLogin, setIsLogin } : SignInProps) {
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [switchInput, setSwitchInput] = useState(false);
+    const navigate = useNavigate();
+
+    const [showPassword, setShowPassword] = useState(false); //switch password visibility
+    const [switchInput, setSwitchInput] = useState(false); //switch input type
+
+    const [email, setEmail] = useState("");
+    const [userName, setUserName] = useState("");
+    const [password, setPassword] = useState("");
+
+    //object to be sent on login
+    const user = {
+        email_or_username: switchInput ? email.trim() : userName.trim(),
+        password
+    }
+
+    const handleFormSubmit = async (e: React.FormEvent) => {
+
+        e.preventDefault(); //prevent default form action
+        try {
+
+            await signIn(user); //login user
+            navigate('/chat'); //navigate to chat route on success
+        
+        } catch (err) {
+            console.error("Login failed");
+        }
+
+    };
 
     return (
         <>
 
+            {/*main container*/}
             <div className={`
                 flex flex-col
                 justify-center items-center
@@ -28,6 +58,7 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                 ${isLogin ? 'md:delay-500' : ''}
             `}>
 
+                {/*header (only visible on small and medium screens)*/}
                 <h1 className="
                     lg:hidden
                     text-l font-semibold text-[#a07050]
@@ -43,17 +74,21 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                     </span>
                 </h1>
 
+                {/*header (only visible on large screens)*/}
                 <h1 className="
                     hidden lg:block
                     text-4xl text-[#240f04] font-semibold
                     mb-[50px]
                 ">Sign in to Andora</h1>
 
+                {/*sign in form*/}
                 <form className="
                     flex flex-col items-center
                     lg:w-[300px]
-                ">
+                "
+                onSubmit={handleFormSubmit}>
 
+                    {/*email/username container*/}
                     <div className="
                         flex
                         w-[100%] h-[40px]
@@ -61,25 +96,42 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                         rounded-[5px] overflow-hidden
                         mb-6
                     ">
+
+                        {/*email input*/}
                         <Input type="email" placeholder="Email" className={`
                             rounded-none border-none
                             w-[100%] h-[100%] m-0
 
                             ${switchInput ? "block" : "hidden"}
-                        `}></Input>
+                        `}
+                        key='emailInput'
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        ></Input>
 
+                        {/*username input*/}
                         <Input type="text" placeholder="Username" className={`
                             rounded-none border-none
                             w-[100%] h-[100%] m-0
 
                             ${switchInput ? "hidden" : "block"}
-                        `}></Input>
+                        `}
+                        key='userNameInput'
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        ></Input>
 
+                        {/*switch input button*/}
                         <Button type="button" className="
                             lg:pb-[0.4rem] pl-[0.1rem]
                             h-[100%] w-[50px] lg:w-[50px]
                             rounded-none
-                        " onClick={()=>{setSwitchInput(prev=>!prev)}}>
+                        "   
+                        onClick={()=>{ 
+                            setEmail("");
+                            setUserName("");
+                            setSwitchInput(prev=>!prev);
+                        }}>
                             <svg xmlns="http://www.w3.org/2000/svg" 
                                 className="size-[50%]"
                                 fill="none" viewBox="0 0 24 24" 
@@ -90,6 +142,7 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                         </Button>
                     </div>
 
+                    {/*password container*/}
                     <div className="
                         flex
                         w-[100%] h-[40px]
@@ -97,19 +150,24 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                         rounded-[5px] overflow-hidden
                     ">
 
+                        {/*password input*/}
                         <Input type={showPassword ? "text" : "password"} placeholder="Password" className="
                             flex
                             rounded-none border-none
                             w-[100%] h-[100%] m-0
                             text-[#a07050]
-                        "></Input>
+                        "
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}></Input>
 
+                        {/*switch visibility button*/}
                         <Button type="button" className="
                             lg:pb-[0.4rem] pl-[0.1rem]
                             h-[100%] w-[50px] lg:w-[50px]
                             rounded-none
                         " onClick={()=>{setShowPassword(prev=>!prev)}}>
 
+                            {/*open eye svg*/}
                             <svg className={`
                                 ${showPassword ? "inline" : "hidden"}
                                 size-[50%]
@@ -122,6 +180,7 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                             </svg>
 
+                            {/*close eye svg*/}
                             <svg className={`
                                 ${showPassword ? "hidden" : "inline"}
                                 size-[50%]
@@ -137,10 +196,12 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
 
                     </div>
                 
+                    {/*sign in button*/}
                     <Button type="submit" className="
                         mt-[30px] mb-[20px]
                     ">SIGN IN</Button>
 
+                    {/*switch sign out/sign in (only visible on small screens)*/}
                     <span className="
                         md:hidden
                         text-xs text-[#a07050]
@@ -151,7 +212,6 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                     </span>
 
                 </form>
-
 
             </div>
 
