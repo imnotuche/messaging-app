@@ -4,8 +4,7 @@ import api from "../api";
 export async function signIn(user: object){
 
     const response = await api.post("/auth/log-in", user);
-    console.log(response.data);
-    return response.data;
+    return response;
 
 }
 
@@ -13,7 +12,13 @@ export async function signIn(user: object){
 export async function signUp(user:object){
 
     const response = await api.post("/auth/sign-up", user);
-    console.log(response.data);
-    return response.data
+    return response;
 
 } 
+
+export async function isLoggedIn() {
+    
+    const response = await api.get("/auth/logged-in");
+    return response;
+
+}

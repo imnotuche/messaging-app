@@ -62,7 +62,7 @@ def sign_up():
 
         #get id if the user just saved
         cursor.execute(
-            "SELECT id FROM users WHERE email = ? OR username = ?",
+            "SELECT id, password, name, email, username, profile, bio, last_seen FROM users WHERE email = ? OR username = ?",
             (data["email"].lower().strip(), data["username"].lower().strip())
         )
         row = cursor.fetchone()
@@ -78,7 +78,16 @@ def sign_up():
         token=jwt.encode(payload, os.getenv("JWT_SECRET"), algorithm="HS256")
 
         #response object
-        response=make_response(jsonify({"message": "Sign up successful"}))
+        response=make_response(jsonify({
+            "message": "Sign up successful",
+            "user" : {
+                "name" : row["name"],
+                "email" : row["email"],
+                "username" : row["username"],
+                "profile" : row["profile"],
+                "last_seen" : row["last_seen"],
+            }
+        }))
 
         #set cookie
         response.set_cookie(

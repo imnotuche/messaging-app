@@ -28,7 +28,7 @@ def log_in():
         conn, cursor=database.connect()    
         #search for existing account
         cursor.execute(
-            "SELECT id, password, name FROM users WHERE email = ? OR username = ?",
+            "SELECT id, password, name, email, username, profile, bio, last_seen  FROM users WHERE email = ? OR username = ?",
             (data["email_or_username"].lower().strip(), data["email_or_username"].lower().strip())
         )
         user = cursor.fetchone()
@@ -58,6 +58,13 @@ def log_in():
         #response object
         response=make_response(jsonify({
             "message":"Log in successful",
+            "user" : {
+                "name" : user["name"],
+                "email" : user["email"],
+                "username" : user["username"],
+                "profile" : user["profile"],
+                "last_seen" : user["last_seen"],
+            }
         }))
 
         #set cookie

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { signUp } from "../../services/authService";
+import { useAuthStore } from "../../stores/authStore";
 
 import Input from "../UI/Input";
 import Button from "../UI/Button";
@@ -14,6 +14,7 @@ type SignUpProps = {
 function SignUp({ isLogin, setIsLogin } : SignUpProps){
 
     const navigate = useNavigate();
+    const auth = useAuthStore();
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -32,21 +33,15 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
     const handleFormSubmit = async (e: React.FormEvent) => {
 
         e.preventDefault(); //prevent default form action
-        try {
-
-            await signUp(user); //register user
-            navigate('/chat'); //navigate to chat route on success
+        await auth.signUp(user); //register user
+        navigate('/chat'); //navigate to chat route on success
         
-        } catch (err) {
-            console.error("Login failed");
-        }
-
     }
 
     return (
 
         <>
-        
+            {/*component container*/}
             <div className={`
                 flex flex-col
                 justify-center items-center
@@ -59,6 +54,7 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
                 ${isLogin ? '' : 'md:delay-500'}
             `}>
 
+                {/*header (only visible on small and medium screens)*/}
                 <h1 className="
                     lg:hidden
                     text-l font-semibold text-[#a07050]
@@ -74,6 +70,7 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
                     </span>
                 </h1>
 
+                {/*header (only visible on large screens)*/}
                 <h1 className="
                     hidden lg:block
                     text-4xl text-[#240f04] font-semibold
@@ -87,27 +84,33 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
                 onSubmit={handleFormSubmit}
                 >
 
+                    {/*name input*/}
                     <Input type="text" placeholder="Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     ></Input>
 
+                    {/*email input*/}
                     <Input type="email" placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     ></Input>
 
+                    {/*username input*/}
                     <Input type="text" placeholder="Username"
                     value={userName}
                     onChange={(e) => setUserName(e.target.value)}
                     ></Input>
 
+                    {/*password container*/}
                     <div className="
                         flex
                         w-[100%] h-[40px]
                         border border-[#e0c8b8]
                         rounded-[5px] overflow-hidden
                     ">
+
+                        {/*password input*/}
                         <Input type={showPassword ? "text" : "password"} placeholder="Password" className="
                             flex
                             rounded-none border-none
@@ -118,12 +121,14 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
                         onChange={(e) => setPassword(e.target.value)}
                         ></Input>
 
+                        {/*password visibility toggle button*/}
                         <Button type="button" className="
                             lg:pb-[0.4rem] pl-[0.1rem]
                             h-[100%] w-[50px] lg:w-[50px]
                             rounded-none
                         " onClick={()=>{setShowPassword(prev=>!prev)}}>
 
+                            {/*close eye svg*/}
                             <svg className={`
                                 ${showPassword ? "inline" : "hidden"}
                                 size-[50%]
@@ -136,6 +141,7 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                             </svg>
 
+                            {/*open eye svg*/}
                             <svg className={`
                                 ${showPassword ? "hidden" : "inline"}
                                 size-[50%]
@@ -147,16 +153,17 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
                             </svg>
 
-
                         </Button>
 
                     </div>
 
+                    {/*sign in button*/}
                     <Button type="submit" className="
                         mt-[30px] mb-[20px]
                     "
                     >SIGN UP</Button>
 
+                    {/*switch sign out/sign in (only visible on small screens)*/}
                     <span className="
                         md:hidden
                         text-xs text-[#a07050]
@@ -167,7 +174,6 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
                     </span>
 
                 </form>
-
 
             </div>
         

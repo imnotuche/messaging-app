@@ -1,5 +1,5 @@
-import { useNavigate } from 'react-router-dom';
-import { signIn } from "../../services/authService";
+import { useNavigate, Navigate } from 'react-router-dom';
+import { useAuthStore } from '../../stores/authStore';
 
 import Input from "../UI/Input";
 import Button from "../UI/Button";
@@ -14,6 +14,7 @@ type SignInProps = {
 function SignIn({ isLogin, setIsLogin } : SignInProps) {
 
     const navigate = useNavigate();
+    const auth = useAuthStore();
 
     const [showPassword, setShowPassword] = useState(false); //switch password visibility
     const [switchInput, setSwitchInput] = useState(false); //switch input type
@@ -21,6 +22,10 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
     const [email, setEmail] = useState("");
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
+
+    if (auth.isAuthenticated) {
+        return <Navigate to="/chat" replace />;
+    }
 
     //object to be sent on login
     const user = {
@@ -31,21 +36,15 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
     const handleFormSubmit = async (e: React.FormEvent) => {
 
         e.preventDefault(); //prevent default form action
-        try {
-
-            await signIn(user); //login user
-            navigate('/chat'); //navigate to chat route on success
+        await auth.signIn(user); //login user
+        navigate('/chat'); //navigate to chat route on success
         
-        } catch (err) {
-            console.error("Login failed");
-        }
-
     };
 
     return (
         <>
 
-            {/*main container*/}
+            {/*component container*/}
             <div className={`
                 flex flex-col
                 justify-center items-center

@@ -1,10 +1,24 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
 
+import { useAuthStore } from "./stores/authStore";
 import ProtectedLayout from "./components/ProtectedLayout";
 import Auth from "./components/Auth/Auth";
 import ChatUI from "./components/ChatUI/ChatUI";
 
 function App() {
+
+    const auth = useAuthStore()
+
+    useEffect( () => {
+
+        (async () => {
+            await auth.checkAuth()
+        })()
+
+    }, [])
+
+    if (auth.isLoading) return null;
 
     return (
     
@@ -15,7 +29,7 @@ function App() {
                 <Route path="auth" element={<Auth/>} />
                 <Route path="/" element={<Navigate to="/auth" />} />
 
-                <Route element={<ProtectedLayout/>}>
+                <Route element={<ProtectedLayout isAuthenticated = {auth.isAuthenticated} />}>
                     <Route path="chat" element={<ChatUI/>} />
                 </Route>
 

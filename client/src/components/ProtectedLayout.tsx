@@ -1,7 +1,15 @@
-import { Outlet } from "react-router-dom"
+import { Outlet, Navigate } from "react-router-dom"
 import SideBar from "./SideBar"
 
-function ProtectedLayout(){
+type ProtectedRouteProps = {
+    isAuthenticated: boolean;
+}
+
+function ProtectedLayout({isAuthenticated}:ProtectedRouteProps){
+
+    if (!isAuthenticated) {
+        return <Navigate to="/auth" replace />;
+    }
 
     return (
 
