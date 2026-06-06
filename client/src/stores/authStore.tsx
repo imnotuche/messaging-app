@@ -6,7 +6,10 @@ import { getUserData } from "../services/userService";
 type authStoreProps = {
     isAuthenticated: boolean;
     isLoading: boolean;
-    user: object;
+    user: {
+        name: string;
+        username: string;
+    };
     checkAuth: () => void;
     signIn: (user: object) => Promise<void>;
     signUp: (user: object) => Promise<void>;
@@ -16,7 +19,10 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
 
     isAuthenticated: false,
     isLoading: true,
-    user: {},
+    user: {
+        name: "",
+        username: "",
+    },
 
     checkAuth: async() => {
 
@@ -30,10 +36,12 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
                 isAuthenticated: response.data.logged_in
             });
 
-            response = await getUserData(response.data.user_id);
+            response = await getUserData(response.data.payload.user.id);
             set({
-                user: response.data.user
+                user: response.data.payload
             })
+
+            console.log(response);
 
         }catch(err){
             console.log(err)

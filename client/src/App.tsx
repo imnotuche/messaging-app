@@ -13,7 +13,7 @@ function App() {
     useEffect( () => {
 
         (async () => {
-            await auth.checkAuth()
+            auth.checkAuth()
         })()
 
     }, [])
@@ -26,7 +26,10 @@ function App() {
         
             <Routes>
 
-                <Route path="auth" element={<Auth/>} />
+                <Route
+                    path="auth"
+                    element={auth.isAuthenticated ? <Navigate to="/chat" /> : <Auth />}
+                />
                 <Route path="/" element={<Navigate to="/auth" />} />
 
                 <Route element={<ProtectedLayout isAuthenticated = {auth.isAuthenticated} />}>

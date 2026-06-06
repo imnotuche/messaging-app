@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { useAuthStore } from "../stores/authStore";
+
 import Avatar from "./UI/Avatar";
 
 function SideBar(){
@@ -6,6 +8,7 @@ function SideBar(){
     const [dark, setDark] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+    const auth = useAuthStore();
 
     useEffect(() => {
         document.documentElement.classList.toggle("dark", dark);
@@ -321,13 +324,13 @@ function SideBar(){
                             text-m font-medium text-[#f0dcc8]
                             truncate
                             leading-4
-                        ">?*</p>
+                        ">{auth.user.name}</p>
 
                         <p className="
                             text-xs font-medium text-[#8c6a56]
                             truncate
                             leading-4
-                        "><span>@</span>imnotuche</p>
+                        "><span>@</span>{auth.user.username}</p>
 
                     </div>
 
