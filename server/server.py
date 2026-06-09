@@ -14,6 +14,7 @@ from modules import websocket
 #import routes
 from routes.auth import sign_up
 from routes.auth import log_in
+from routes.auth import log_out
 from routes.auth import verify_email
 from routes.auth import logged_in
 from routes import friends
@@ -61,6 +62,7 @@ t.start()
 #mount imported routes
 app.register_blueprint(sign_up.auth, url_prefix="/auth")
 app.register_blueprint(log_in.auth, url_prefix="/auth")
+app.register_blueprint(log_out.auth, url_prefix="/auth")
 app.register_blueprint(verify_email.verification, url_prefix="/auth")
 app.register_blueprint(logged_in.auth, url_prefix="/auth")
 app.register_blueprint(friends.friend, url_prefix="/friends")

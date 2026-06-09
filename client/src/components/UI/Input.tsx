@@ -11,15 +11,16 @@ function Input({
 
         <input {...props} className={twMerge(
 
-            `flex justify-start items-center
+            `bg-[var(--input-bg)]
+            flex justify-start items-center
             h-[40px] w-[100%]
             pl-[10px] mb-[10px]
             rounded-[5px]
-            border border-[#e0c8b8]
-            focus:outline-none 
+            border border-[var(--border)]
+            focus:outline-none focus:border-[var(--input-bg-f)]
             placeholder:text-xs lg:placeholder:text-sm
-            placeholder-[#a07050]
-            text-sm text-[#3a1a0a] font-medium`,
+            placeholder-[var(--dim)]
+            text-sm text-[var(--text)]`,
             className
 
         )}/>

@@ -8,6 +8,14 @@ export async function signIn(user: object){
 
 }
 
+//handles signout
+export async function signOut(){
+
+    const response = await api.post("/auth/log-out");
+    return response;
+
+}
+
 //handles sign up
 export async function signUp(user:object){
 

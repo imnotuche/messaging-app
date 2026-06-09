@@ -6,6 +6,64 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
+:root {
+    --bg:               #f0f4f0;
+    --form-bg:          #fafcfa;
+    --input-bg:         #f0f5f0;
+    --input-bg-f:       #ffffff;
+    --border:           #c8dac8;
+    --border-hi:        #5a9e6a;
+    --text:             #0a1a0c;
+    --muted:            #3d6b42;
+    --dim:              #8aaa8c;
+    --accent:           #166534;
+    --accent-lo:        #4a8a56;
+    --panel-bg:         #0d1f0e;
+    --cta-bg:           #166534;
+    --cta-text:         #f0fdf4;
+    --panel-text:       #d1fae5;
+    --panel-sub:        rgba(74,222,128,0.5);
+    --panel-btn-border: rgba(74,222,128,0.3);
+    --panel-btn-color:  rgba(74,222,128,0.8);
+    --separator:        rgba(74,222,128,0.2);
+    --card-border:      #c8dac8;
+    --card-shadow:      0 4px 6px rgba(10,26,12,0.04), 0 24px 60px rgba(10,26,12,0.1);
+    --grid-stroke:      rgba(22,101,52, 0.1);
+    --glow-center:      rgba(200,220,200,0.5);
+    --glow-edge:        rgba(240,244,240,0);
+}
+
+.dark {
+    --bg:               #080c09;
+    --form-bg:          #0c100d;
+    --input-bg:         #111612;
+    --input-bg-f:       #161c17;
+    --border:           #1c241d;
+    --border-hi:        #2d4a2e;
+    --text:             #e4ede5;
+    --muted:            #5a7a5c;
+    --dim:              #2a3a2b;
+    --accent:           #4ade80;
+    --accent-lo:        #22543d;
+    --panel-bg:         #0d1f0e;
+    --cta-bg:           #16a34a;
+    --cta-text:         #f0fdf4;
+    --panel-text:       #d1fae5;
+    --panel-sub:        rgba(74,222,128,0.45);
+    --panel-btn-border: rgba(74,222,128,0.25);
+    --panel-btn-color:  rgba(74,222,128,0.7);
+    --separator:        rgba(74,222,128,0.15);
+    --card-border:      #1c2a1e;
+    --card-shadow:      0 0 0 1px rgba(74,222,128,0.06), 0 32px 80px rgba(0,0,0,0.8);
+    --grid-stroke:      rgba(74,222,128,0.03);
+    --glow-center:      rgba(13,31,14,0.9);
+    --glow-edge:        rgba(8,12,9,0);
+}
+
+
+
 *{
     @apply box-border;
 }

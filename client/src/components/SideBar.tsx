@@ -1,18 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuthStore } from "../stores/authStore";
+import { useSettingsStore } from "../stores/settingsStore";
 
 import Avatar from "./UI/Avatar";
 
 function SideBar(){
 
-    const [dark, setDark] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const auth = useAuthStore();
-
-    useEffect(() => {
-        document.documentElement.classList.toggle("dark", dark);
-    }, [dark]);
+    const settings = useSettingsStore();
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
@@ -277,8 +274,8 @@ function SideBar(){
 
                         {menuItems.map((m, i) => {
 
-                            if (m.name === "Light Mode" && !dark) return null;
-                            if (m.name === "Dark Mode" && dark) return null;
+                            if (m.name === "Light Mode" && !settings.dark) return null;
+                            if (m.name === "Dark Mode" && settings.dark) return null;
 
                             return (
 
@@ -289,7 +286,8 @@ function SideBar(){
                                 "
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        if (m.name === "Light Mode" || m.name === "Dark Mode") setDark(p => !p);
+                                        if (m.name === "Light Mode" || m.name === "Dark Mode") settings.changeTheme();
+                                        if (m.name === "Sign Out") auth.signOut();
                                         setMenuOpen(false);
                                     }}
                                 >

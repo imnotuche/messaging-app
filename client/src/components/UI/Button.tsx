@@ -13,8 +13,8 @@ function Button({
         <button {...props} className={twMerge(
             `flex justify-center items-center
             overflow-hidden
-            text-[0.8rem] text-[#f0dcc8]
-            bg-[#240f04] 
+            text-[0.8rem] text-[var(--cta-text)]
+            bg-[var(--cta-bg)] 
             h-[40px] w-[150px] lg:h-[45px] lg:w-[200px]
             rounded-[22px]`,
             className

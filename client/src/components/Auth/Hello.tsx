@@ -17,12 +17,14 @@ function Hello({isLogin} : HelloProps) {
             `}>
 
                 <h1 className="
-                    text-3xl text-[#f0dcc8] font-semibold
+                    text-3xl text-[var(--panel-text)]
+                    font-semibold
                     mb-[10px]
                 ">Hello!</h1>
 
                 <p className="
-                    text-center md:text-[0.65rem] lg:text-[0.75rem] text-[#f0dcc8]
+                    text-center md:text-[0.65rem] lg:text-[0.75rem] 
+                    text-[var(--panel-sub)]
                     mb-[20px]
                 ">
                     Dont have an account ? click below to <br /> start messaging with Andora

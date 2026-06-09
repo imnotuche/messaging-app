@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { signUp, signIn, isLoggedIn } from "../services/authService";
+import { signUp, signIn, isLoggedIn, signOut } from "../services/authService";
 import { getUserData } from "../services/userService";
 
 type authStoreProps = {
@@ -12,6 +12,7 @@ type authStoreProps = {
     };
     checkAuth: () => void;
     signIn: (user: object) => Promise<void>;
+    signOut: () => Promise<void>;
     signUp: (user: object) => Promise<void>;
 }
 
@@ -53,11 +54,9 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
 
     signIn: async(user) => {
 
-        let response;
-
         try{   
 
-            response = await signIn(user);
+            const response = await signIn(user);
             console.log(response);
             set({
                 isAuthenticated: response.status === 200 ? true : false,
@@ -70,13 +69,31 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
 
     },
 
-    signUp: async(user) => {
+    signOut: async() => {
+        
+        try{
 
-        let response;
+            const response = await signOut();
+            set({
+                isAuthenticated: false,
+                user: {
+                    name: "",
+                    username: "",
+                }
+            })
+            console.log(response);
+
+        }catch(err: any) {
+            console.log(err);
+        }  
+
+    },
+
+    signUp: async(user) => {
 
         try{
 
-            response = await signUp(user);
+            const response = await signUp(user);
             set({
                 isAuthenticated: response.status === 200 ? true : false,
                 user: response.data.user

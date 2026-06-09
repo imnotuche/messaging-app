@@ -1,4 +1,4 @@
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 
 import Input from "../UI/Input";
@@ -60,14 +60,15 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                 {/*header (only visible on small and medium screens)*/}
                 <h1 className="
                     lg:hidden
-                    text-l font-semibold text-[#a07050]
+                    text-l font-semibold 
+                    text-[var(--text)]
                     w-[100%]
                     mb-[50px] 
                     px-8
                 ">
                     Sign in to <br />
                     <span className="
-                        text-3xl text-[#240f04]
+                        text-3xl text-[var(--muted)]
                     ">
                         Andora
                     </span>
@@ -76,7 +77,7 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                 {/*header (only visible on large screens)*/}
                 <h1 className="
                     hidden lg:block
-                    text-4xl text-[#240f04] font-semibold
+                    text-4xl text-[var(--text)] font-semibold
                     mb-[50px]
                 ">Sign in to Andora</h1>
 
@@ -91,10 +92,12 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                     <div className="
                         flex
                         w-[100%] h-[40px]
-                        border border-[#e0c8b8]
+                        border border-[var(--border)]
+                        focus:outline-none focus:border-[var(--input-bg-f)]
                         rounded-[5px] overflow-hidden
                         mb-6
-                    ">
+                    "
+                    tabIndex={0}>
 
                         {/*email input*/}
                         <Input type="email" placeholder="Email" className={`
@@ -145,16 +148,18 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                     <div className="
                         flex
                         w-[100%] h-[40px]
-                        border border-[#e0c8b8]
+                        border border-[var(--border)]
+                        focus:outline-none focus:border-[var(--input-bg-f)]
                         rounded-[5px] overflow-hidden
-                    ">
+                    "
+                    tabIndex={0}>
 
                         {/*password input*/}
                         <Input type={showPassword ? "text" : "password"} placeholder="Password" className="
                             flex
                             rounded-none border-none
                             w-[100%] h-[100%] m-0
-                            text-[#a07050]
+                            text-[--cta-bg]
                         "
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}></Input>
@@ -194,6 +199,14 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                         </Button>
 
                     </div>
+
+                    <Link className="
+                        w-full flex justify-end
+                        text-xs text-[var(--muted)] hover:text-[var(--accent)]
+                        mt-2
+                    " to={""}>
+                        forgot password?
+                    </Link>
                 
                     {/*sign in button*/}
                     <Button type="submit" className="
@@ -203,10 +216,10 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                     {/*switch sign out/sign in (only visible on small screens)*/}
                     <span className="
                         md:hidden
-                        text-xs text-[#a07050]
+                        text-xs text-[#a07050] dark:text-[#4a2a18]
                     ">
                         Don't have an account? <button type = "button" className="
-                            text-[#7a4028]
+                            text-[#7a4028] dark:text-[#633b22]
                         " onClick={() => setIsLogin((prev : boolean) => !prev)}>Sign up</button>
                     </span>
 
