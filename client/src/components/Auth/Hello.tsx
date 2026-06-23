@@ -24,7 +24,7 @@ function Hello({isLogin} : HelloProps) {
 
                 <p className="
                     text-center md:text-[0.65rem] lg:text-[0.75rem] 
-                    text-[var(--panel-sub)]
+                    text-[var(--panel-text)]
                     mb-[20px]
                 ">
                     Dont have an account ? click below to <br /> start messaging with Andora

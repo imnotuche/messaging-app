@@ -24,7 +24,7 @@ function Welcome({isLogin} : HelloProps) {
 
                 <p className="
                     text-center md:text-[0.65rem] lg:text-[0.75rem] 
-                    text-[var(--panel-sub)]
+                    text-[var(--panel-text)]
                     mb-[20px]
                 ">
                     Already have an account ? click below <br  />to Sign in

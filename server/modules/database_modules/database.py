@@ -14,7 +14,7 @@ db_path=os.path.join(files_dir, os.getenv("DB_NAME"))
 
 def connect():
     # create or connect to database file
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=30)
     #Set the connection to return Row objects
     conn.row_factory = sqlite3.Row 
     # create a table

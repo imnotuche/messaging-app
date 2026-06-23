@@ -21,7 +21,7 @@ function CurrentChat(){
         <>
 
             <div className="
-                bg-[#f5ede6]
+                bg-[var(--bg)]
                 relative overflow-hidden
                 flex flex-col
                 w-full md:flex-1 lg:w-[70%]
@@ -29,11 +29,12 @@ function CurrentChat(){
             ">
                 
                 <div className="
-                    bg-[#8c6a56]/10 backdrop-blur-sm
+                    bg-[var(--chat-header-mask)] backdrop-blur-sm
                     absolute
                     z-10
                     flex items-center
-                    w-full h-16 lg:h-[88px]
+                    w-full h-16 lg:h-20
+                    border-b border-[var(--border)]
                 ">
 
                     <Avatar containerClassName="
@@ -47,14 +48,14 @@ function CurrentChat(){
                     <div>
 
                         <p className="
-                            text-[#240f04]
+                            text-[var(--text)]
                             text-sm lg:text-xl 
                             font-semibold
                             md:leading-5
                         ">Somebody</p>
 
                         <p className="
-                            text-[#a87c5e]
+                            text-[var(--accent)]
                             text-xs lg:text-base 
                             font-medium
                             md:leading-4
@@ -65,7 +66,7 @@ function CurrentChat(){
                 </div>
 
                 <div className="
-                    overflow-y-auto scrollbar-light
+                    overflow-y-auto scrollbar-light dark:scrollbar-dark
                     w-full flex-1
                     p-1 md:p-3 lg:p-5
                 ">
@@ -105,12 +106,13 @@ function CurrentChat(){
                 </div>
 
                 <div className="
-                    bg-[linear-gradient(to_bottom,#f5ede600_0%,#f5ede6_90%)]
                     absolute bottom-0
                     z-10
                     flex items-center justify-center
                     w-full p-2 md:p-5
-                ">
+                "
+                style={{ background: "var(--chat-bottom-mask)" }}
+                >
 
                     <div className="
                         flex items-center overflow-hidden
@@ -118,24 +120,25 @@ function CurrentChat(){
                     ">
 
                         <div className="
-                            bg-white
+                            bg-[var(--form-bg)]
                             flex items-center
                             flex-1 
                             py-2 mr-2 md:mr-4 
-                            border border-[#e0c8b8] rounded-[7px]
+                            border border-[var(--border)] rounded-[7px]
                         ">
 
                             <textarea className="
-                                text-[#3a1a0a] font-medium
+                                text-[var(--text)] font-medium
                                 text-xs lg:text-base
                                 placeholder:font-medium
-                                placeholder-[#a07050] 
+                                placeholder-[var(--muted)] 
                                 placeholder:text-xs lg:placeholder:text-base
                                 max-h-28 w-full
                                 resize-none overflow-y-auto
-                                scrollbar-light 
+                                scrollbar-light dark:scrollbar-dark
                                 outline-none
                                 px-3
+                                bg-transparent
                             "   
                                 placeholder="Type a message"
                                 ref={textareaRef}
@@ -146,13 +149,14 @@ function CurrentChat(){
                         </div>
 
                         <Button className="
+                            bg-[var(--cta-bg)]
                             h-[33px] md:h-[35px] lg:h-[40px] w-[33px] md:w-[35px] lg:w-[40px]
                             rounded-[7px]
                             pl-[2px]
                         ">
 
                             <svg className="
-                                size-4 lg:size-5 text-[#f0dcc8]
+                                size-4 lg:size-5 text-[var(--cta-text)]
                             "
                                 xmlns="http://www.w3.org/2000/svg" 
                                 fill="none" viewBox="0 0 24 24" 

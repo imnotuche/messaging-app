@@ -27,11 +27,11 @@ function Avatar({
                     absolute top-0 right-0
                     translate-x-[1px] -translate-y-[1px]
                     h-3 aspect-square
-                    rounded-full border-2 border-[#fdf8f5]
+                    rounded-full border-2 border-[var(--form-bg)]
                 `, onlineIndicatorClassName)}></div>
 
                 <img src={imageSrc} className={twMerge(`
-                    bg-[#3d1a08]
+                    bg-[var(--dim)]
                     h-12 aspect-square 
                     rounded-lg
                 `, imageClassName)}/>

@@ -8,6 +8,7 @@ import threading
 
 #import user created files
 from modules.database_modules import create_tables
+from modules.async_workers import email_worker
 from modules.caching import redis_notifications
 from modules import websocket
 
@@ -58,6 +59,11 @@ t = threading.Thread(
     daemon=True 
 )
 t.start()
+
+if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug:
+        worker_thread = threading.Thread(target=email_worker.process_email_queue, daemon=True)
+        worker_thread.start()
+        print("Backend engine automatically spawned the email worker thread.")
 
 #mount imported routes
 app.register_blueprint(sign_up.auth, url_prefix="/auth")

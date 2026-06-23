@@ -216,10 +216,10 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                     {/*switch sign out/sign in (only visible on small screens)*/}
                     <span className="
                         md:hidden
-                        text-xs text-[#a07050] dark:text-[#4a2a18]
+                        text-xs text-[var(--muted)]
                     ">
                         Don't have an account? <button type = "button" className="
-                            text-[#7a4028] dark:text-[#633b22]
+                            text-[var(--panel-sub)] hover:text-[var(--accent)]
                         " onClick={() => setIsLogin((prev : boolean) => !prev)}>Sign up</button>
                     </span>
 

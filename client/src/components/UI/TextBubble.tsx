@@ -35,7 +35,7 @@ function TextBubble({
                 <Avatar containerClassName={`
                     ${!isMe && isLast ? 'mr-6 inline-block' : 'hidden'}
                 `} imageClassName="
-                    h-7 md:h-8 rounded-lg 
+                    h-7 md:h-8 rounded-lg \r
                 " onlineIndicatorClassName="
                     hidden
                 " imageSrc={imageSrc}/>
@@ -43,11 +43,11 @@ function TextBubble({
                 <div className={twMerge(`
                     relative
                     w-fit max-w-44 md:max-w-52 lg:max-w-80
-                    rounded-lg p-3 pb-2 
+                    rounded-lg p-3 pb-2 \r
                     text-xs lg:text-sm
                     cursor-pointer
-                    ${isMe ? 'bg-[#240f04]' : 
-                        'bg-[#ecddd4] #ecddd4 border border-[#e0c8b8]'}
+                    ${isMe ? 'bg-[var(--accent)]' : 
+                        'bg-[var(--input-bg)] border border-[var(--border)]'}
                     ${isLast ? 'mb-5' : 'mb-1'}
                     ${isMe && !isLast ? 'mr-[56px]' : ''} 
                     ${!isMe && !isLast ? 'ml-[56px]' : ''}
@@ -55,11 +55,11 @@ function TextBubble({
 
                     <p className={`
                         m-auto
-                        ${isMe ? 'text-[#f0dcc8]' : 'text-[#3a1a0a]'}
+                        ${isMe ? 'text-[var(--cta-text)]' : 'text-[var(--text)]'}
                     `}>{textContent}</p>
 
                     <div className={`
-                        text-[#8c6a56]
+                        ${isMe ? 'text-[var(--text)]' : 'text-[var(--muted)]'}
                         text-[10px] lg:text-xs font-semibold
                         flex justify-end
                         h-fit w-full
@@ -68,7 +68,7 @@ function TextBubble({
                         <p>3:41</p>
 
                         <svg className="
-                            size-4 
+                            size-4 \r
                             hidden ml-1
                         "
                             xmlns="http://www.w3.org/2000/svg" 
@@ -121,7 +121,7 @@ function TextBubble({
                 <Avatar containerClassName={`
                     ${isMe && isLast ? 'ml-6 inline-block' : 'hidden'}
                 `} imageClassName="
-                    h-7 md:h-8 rounded-lg 
+                    h-7 md:h-8 rounded-lg \r
                 " onlineIndicatorClassName="
                     hidden
                 " imageSrc={imageSrc}/>
@@ -152,13 +152,13 @@ export function TypingBubble({
                 <Avatar containerClassName={`
                     'inline-block
                 `} imageClassName="
-                    h-7 md:h-8 rounded-lg 
+                    h-7 md:h-8 rounded-lg \r
                 " onlineIndicatorClassName="
                     hidden
                 " imageSrc={imageSrc}/>
         
                 <div className={twMerge(`
-                    bg-[#ecddd4] border border-[#e0c8b8]
+                    bg-[var(--input-bg)] border border-[var(--border)]
                     flex justify-center items-center
                     gap-1
                     w-12 md:w-14 md:h-7
@@ -169,7 +169,7 @@ export function TypingBubble({
                     {arr.map(() => (
 
                         <div className={`
-                            bg-[#3a1a0a]
+                            bg-[var(--muted)]
                             h-1.5 md:h-2 aspect-square
                             rounded-full
                         `}></div>

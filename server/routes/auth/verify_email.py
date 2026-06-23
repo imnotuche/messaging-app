@@ -5,7 +5,6 @@ import secrets
 import os
 
 #import user created modules
-from modules import send_email
 from modules.database_modules import database
 
 #initializing route name and filepath
@@ -26,6 +25,7 @@ def send_code():
 
     if not user:
         print(f"User not found   source:{__name__}")
+        conn.close() #close connection before returning
         return jsonify({"message":"Account does not exist"}), 404
 
     code = f"{secrets.randbelow(1000000):06d}" #randomly generate 6-digit number
@@ -42,11 +42,17 @@ def send_code():
     """ 
     #response object
     response=make_response(jsonify({
-        "message": f"Verification code has been sent to {user["email"]}"
+        "message": f"Verification code has been sent to {user['email']}"
     }))
 
     try:
-        send_email.send_mail(user["email"], subject, body) #send email
+        #queue the email payload into the database
+        cursor.execute(
+            "INSERT INTO email_queue (recipient, subject, body) VALUES (?, ?, ?)",
+            (user["email"], subject, body)
+        )
+        conn.commit() #commit changes to disk
+        conn.close() #close connection cleanly
 
         #encrypt and store code in cookie
         hashed=bcrypt.hash(code) 
@@ -59,12 +65,14 @@ def send_code():
             max_age=60*10 #expires in 10 minutes   
         )
 
-        print(f"Verification code has been sent to {user["email"]}") #log message
+        print(f"Verification code has been queued for {user['email']}") #log message
         return response, 200 #frontend response
 
     except Exception as e:
         print(f"error: {str(e)}  source: {__name__}") #log message
-        return jsonify({"message":"Couldn’t send verification email"}), 500 #frontend response
+        if conn:
+            conn.close() #safely close connection on failure
+        return jsonify({"message":"Couldn't send verification email"}), 500 #frontend response
 
 #route to verify code
 @verification.route("/verify-code", methods=["POST"])
@@ -90,5 +98,3 @@ def verify_code():
             "message": "Incorrect code",
             "verified": False
         }), 401
-
-    

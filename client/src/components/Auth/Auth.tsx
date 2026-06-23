@@ -19,7 +19,7 @@ function Auth() {
 
             <GridBg className="
                 flex justify-center items-center
-                w-screen h-screen relative
+                w-screen h-screen
             ">
 
                 <Button className="
@@ -116,8 +116,8 @@ function Auth() {
                         <Button className="
                             bg-white/0
                             flex relative
-                            border border-[var(--panel-btn-border)]
-                            text-[--panel-btn-color]
+                            border border-[var(--panel-text)]
+                            text-[var(--panel-text)]
                             w-[50%] md:text-[0.6rem] lg:text-sm
                         " onClick={()=>{
                             setIsLogin(prev => !prev);

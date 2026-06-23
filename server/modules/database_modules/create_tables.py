@@ -42,6 +42,20 @@ def create_tables():
                 )
             """
         )
+
+        #email queue table
+        cursor.execute(
+            """
+                CREATE TABLE IF NOT EXISTS email_queue(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    recipient TEXT NOT NULL,
+                    subject TEXT NOT NULL,
+                    body TEXT NOT NULL,
+                    status TEXT DEFAULT 'PENDING',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """
+        )
         
         conn.commit()
         print("Tables created")
@@ -50,5 +64,5 @@ def create_tables():
         print(f"{e}    source:{__name__}") #log message
         
     finally:
-        conn.close()
-        return
+        if conn:
+            conn.close()

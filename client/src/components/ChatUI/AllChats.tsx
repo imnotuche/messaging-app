@@ -12,13 +12,13 @@ function AllChats(){
         <>
 
             <div className={`
-                bg-[#f5ede6] shadow-[0_8px_32px_#240f042e]
+                bg-[var(--bg)] shadow-[0_8px_32px_rgba(15,23,42,0.06)]
                 absolute md:relative z-10 md:z-0
                 right-3 md:right-0 bottom-1/2 md:bottom-0
                 translate-y-1/2 md:translate-y-0 md:translate-x-0
                 flex flex-col items-center
                 h-[90%] md:h-full w-[80%] lg:w-[30%]
-                rounded-xl border border-[#a07050]/50 md:border-none
+                rounded-xl border border-[var(--border)] md:border-none
                 md:ml-3
                 transition-all duration-300 ease
                 ${chatListExpand ? 'md:w-[35%]' : 'md:w-[10%]'}
@@ -26,17 +26,18 @@ function AllChats(){
             `}>
 
                 <div className={`
-                    bg-[#8c6a56]/10 backdrop-blur-sm
+                    bg-[var(--chat-header-mask)] backdrop-blur-sm
                     absolute top-0
                     flex items-center lg:justify-start
                     w-full h-14 md:h-16
                     rounded-t-xl 
+                    border-b border-[var(--border)]
                     md:text-lg lg:text-xl font-semibold
                     ${chatListExpand ? 'md:justify-start' : 'md:justify-center'}
                 `}>
 
                     <Button className={`
-                        bg-[#240f04]
+                        bg-[var(--text)]
                         absolute
                         flex md:hidden
                         -translate-x-full md:translate-x-0
@@ -49,7 +50,7 @@ function AllChats(){
                         }}
                     >
                         <svg className={`
-                            size-4 text-[#f5ede6] 
+                            size-4 text-[var(--bg)] 
                             transition-all duration-300 ease
                             ${chatListVisible ? '' : 'rotate-180'}
                         `}
@@ -64,7 +65,7 @@ function AllChats(){
                     </Button> 
 
                     <Button className={`
-                        bg-[#f0dcc8]/0
+                        bg-transparent
                         hidden md:flex lg:hidden 
                         justify-center items-center
                         w-10 h-10
@@ -75,7 +76,7 @@ function AllChats(){
                         }}
                     >
                         <svg className={`
-                            size-4 text-[#240f04] 
+                            size-4 text-[var(--text)] 
                             transition-all duration-300 ease
                             ${chatListExpand ? '' : 'rotate-180'}
                         `}
@@ -90,7 +91,7 @@ function AllChats(){
                     </Button>  
 
                     <p className={`
-                        lg:block 
+                        lg:block text-[var(--text)]
                         ml-4 md:ml-2 lg:ml-8
                         lg:translate-x-0 lg:opacity-100
                         transition-all duration-300 ease
@@ -132,7 +133,7 @@ function AllChats(){
 
                                 <p className="
                                     text-sm md:text-m 
-                                    font-semibold text-[#240f04]
+                                    font-semibold text-[var(--text)]
                                     truncate
                                     leading-5
                                     mb-[2px]
@@ -140,7 +141,7 @@ function AllChats(){
 
                                 <p className="
                                     text-xs lg:text-sm 
-                                    font-medium text-[#a07050]
+                                    font-medium text-[var(--muted)]
                                     truncate
                                     leading-5
                                 ">
@@ -189,17 +190,17 @@ function AllChats(){
                             `}>
                                 <p className="
                                     text-xs lg:text-sm 
-                                    font-semibold text-[#a07050]
+                                    font-semibold text-[var(--muted)]
                                 ">3:41</p>
 
                                 <div className="
-                                    bg-[#240f04]
+                                    bg-[var(--text)]
                                     flex justify-center items-center
                                     h-5 lg:h-6 aspect-square
                                     pb-[2px] my-[2px]
                                     rounded-full
                                     text-xs lg:text-sm 
-                                    font-semibold text-[#f5ede6]
+                                    font-semibold text-[var(--bg)]
                                 ">2</div>
 
                             </div>
@@ -212,12 +213,13 @@ function AllChats(){
                 </div>
 
                 <div className="
-                    bg-[linear-gradient(to_bottom,#f5ede600_0%,#f5ede6_90%)]
                     absolute bottom-0
                     flex items-center
                     rounded-b-xl 
                     w-full h-12
-                "></div>
+                "
+                style={{ background: "var(--chat-bottom-mask)" }}
+                ></div>
 
             </div>
 

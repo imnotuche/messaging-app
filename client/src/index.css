@@ -9,60 +9,64 @@
 
 
 :root {
-    --bg:               #f0f4f0;
-    --form-bg:          #fafcfa;
-    --input-bg:         #f0f5f0;
+    /* Light Mode - Crisp Slate Gray & Precision Royal Blue */
+    --bg:               #f4f6f8;
+    --form-bg:          #ffffff;
+    --input-bg:         #eef2f5;
     --input-bg-f:       #ffffff;
-    --border:           #c8dac8;
-    --border-hi:        #5a9e6a;
-    --text:             #0a1a0c;
-    --muted:            #3d6b42;
-    --dim:              #8aaa8c;
-    --accent:           #166534;
-    --accent-lo:        #4a8a56;
-    --panel-bg:         #0d1f0e;
-    --cta-bg:           #166534;
-    --cta-text:         #f0fdf4;
-    --panel-text:       #d1fae5;
-    --panel-sub:        rgba(74,222,128,0.5);
-    --panel-btn-border: rgba(74,222,128,0.3);
-    --panel-btn-color:  rgba(74,222,128,0.8);
-    --separator:        rgba(74,222,128,0.2);
-    --card-border:      #c8dac8;
-    --card-shadow:      0 4px 6px rgba(10,26,12,0.04), 0 24px 60px rgba(10,26,12,0.1);
-    --grid-stroke:      rgba(22,101,52, 0.1);
-    --glow-center:      rgba(200,220,200,0.5);
-    --glow-edge:        rgba(240,244,240,0);
+    --border:           #d1dbe5;
+    --border-hi:        #2563eb; /* True Accent Change */
+    --text:             #0f172a;
+    --muted:            #475569;
+    --dim:              #94a3b8;
+    --accent:           #1d4ed8; /* Electric Royal Blue Accent */
+    --accent-lo:        #93c5fd;
+    --panel-bg:         #0f172a; /* Solid Slate Black side panel */
+    --cta-bg:           #1d4ed8;
+    --cta-text:         #f8fafc;
+    --panel-text:       #f1f5f9;
+    --panel-sub:        #94a3b8;
+    --panel-btn-border: #334155;
+    --panel-btn-color:  #cbd5e1;
+    --separator:        #1e293b;
+    --card-border:      #d1dbe5;
+    --card-shadow:      0 4px 6px rgba(15,23,42,0.02), 0 24px 60px rgba(15,23,42,0.06);
+    --grid-stroke:      rgba(37,99,235, 0.07);
+    --glow-center:      rgba(226,232,240,0.4);
+    --glow-edge:        rgba(244,246,248,0);
+    --chat-header-mask: rgba(37, 99, 235, 0.06);  /* Solid white backdrop with 10% opacity */
+    --chat-bottom-mask: linear-gradient(to bottom, rgba(244, 246, 248, 0) 0%, rgba(244, 246, 248) 20%);
 }
 
 .dark {
-    --bg:               #080c09;
-    --form-bg:          #0c100d;
-    --input-bg:         #111612;
-    --input-bg-f:       #161c17;
-    --border:           #1c241d;
-    --border-hi:        #2d4a2e;
-    --text:             #e4ede5;
-    --muted:            #5a7a5c;
-    --dim:              #2a3a2b;
-    --accent:           #4ade80;
-    --accent-lo:        #22543d;
-    --panel-bg:         #0d1f0e;
-    --cta-bg:           #16a34a;
-    --cta-text:         #f0fdf4;
-    --panel-text:       #d1fae5;
-    --panel-sub:        rgba(74,222,128,0.45);
-    --panel-btn-border: rgba(74,222,128,0.25);
-    --panel-btn-color:  rgba(74,222,128,0.7);
-    --separator:        rgba(74,222,128,0.15);
-    --card-border:      #1c2a1e;
-    --card-shadow:      0 0 0 1px rgba(74,222,128,0.06), 0 32px 80px rgba(0,0,0,0.8);
-    --grid-stroke:      rgba(74,222,128,0.03);
-    --glow-center:      rgba(13,31,14,0.9);
-    --glow-edge:        rgba(8,12,9,0);
+    /* Dark Mode - Deep Obsidian Gray & Vivid Cyber Neon Blue */
+    --bg:               #111625; /* Slightly lighter chat background (from #0b0f19) */
+    --form-bg:          #111827;
+    --input-bg:         #1f2937;
+    --input-bg-f:       #374151;
+    --border:           #1f2937;
+    --border-hi:        #3b82f6; /* True Accent Change */
+    --text:             #f8fafc;
+    --muted:            #94a3b8; 
+    --dim:              #374151;
+    --accent:           #3b82f6; /* Vivid Neon Blue Accent */
+    --accent-lo:        #1e3a8a;
+    --panel-bg:         #02040a; /* Darker sidebar version (from #030712) */
+    --cta-bg:           #2563eb;
+    --cta-text:         #f8fafc;
+    --panel-text:       #f9fafb;
+    --panel-sub:        #6b7280; 
+    --panel-btn-border: #1f2937;
+    --panel-btn-color:  #9ca3af;
+    --separator:        #111827;
+    --card-border:      #1f2937;
+    --card-shadow:      0 0 0 1px rgba(59,130,246,0.08), 0 32px 80px rgba(0,0,0,0.9);
+    --grid-stroke:      rgba(59,130,246,0.07);
+    --glow-center:      rgba(17,24,39,0.95);
+    --glow-edge:        rgba(11,15,25,0);
+    --chat-header-mask: rgba(59, 130, 246, 0.05);     /* Form-bg or panel-bg with 10% opacity */
+    --chat-bottom-mask: linear-gradient(to bottom, rgba(17, 22, 37, 0) 0%, rgba(17, 22, 37) 20%);
 }
-
-
 
 *{
     @apply box-border;
@@ -74,45 +78,19 @@ body {
 }
 
 @layer utilities {
-    .scrollbar-dark::-webkit-scrollbar {
-        width: 6px;
-    }
+    /* Dark Mode Scrollbars with transparent track background */
+    .scrollbar-dark::-webkit-scrollbar { width: 6px; }
+    .scrollbar-dark::-webkit-scrollbar-track { background: transparent; }
+    .scrollbar-dark::-webkit-scrollbar-thumb { background: var(--dim); }
+    .scrollbar-dark::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
-    .scrollbar-dark::-webkit-scrollbar-track {
-        background: #01040a;
-    }
+    /* Light Mode Scrollbars with transparent track background */
+    .scrollbar-light::-webkit-scrollbar { width: 6px; }
+    .scrollbar-light::-webkit-scrollbar-track { background: transparent; }
+    .scrollbar-light::-webkit-scrollbar-thumb { background: var(--border); }
+    .scrollbar-light::-webkit-scrollbar-thumb:hover { background: var(--dim); }
 
-    .scrollbar-dark::-webkit-scrollbar-thumb {
-        background: #2a1208;
-    }
-
-    .scrollbar-dark::-webkit-scrollbar-thumb:hover {
-        background: #3d1a08;
-    }
-
-    .scrollbar-light::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .scrollbar-light::-webkit-scrollbar-track {
-        background: #f5ede6;
-    }
-
-    .scrollbar-light::-webkit-scrollbar-thumb {
-        background: #e0c8b8;
-    }
-
-    .scrollbar-light::-webkit-scrollbar-thumb:hover {
-        background: #dbc9b4;
-    }
-
-    .scrollbar-dark {
-        scrollbar-width: thin;
-        scrollbar-color: #2a1208 #01040a;
-    }
-
-    .scrollbar-light {
-        scrollbar-width: thin;
-        scrollbar-color: #e0c8b8 #f5ede6;
-    }
+    /* Firefox Support definitions using transparent track background keyword */
+    .scrollbar-dark { scrollbar-width: thin; scrollbar-color: var(--dim) transparent; }
+    .scrollbar-light { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
 }

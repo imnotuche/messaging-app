@@ -1,20 +1,20 @@
 import { twMerge } from "tailwind-merge";
 type DivBgProps = React.HTMLAttributes<HTMLDivElement>;
 
-const R = 36;
-const W = 3 * R;
-const H = Math.sqrt(3) * R;
+const R = 30;
+const W = Math.sqrt(3) * R;
+const H = 3 * R;
 
 function hexPath(cx: number, cy: number, r: number): string {
     const pts = Array.from({ length: 6 }, (_, i) => {
-        const angle = (Math.PI / 180) * (60 * i);
+        const angle = (Math.PI / 180) * (60 * i + 30);
         return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
     });
     return `M ${pts[0]} ${pts.slice(1).map(p => `L ${p}`).join(" ")} Z`;
 }
 
 const hex1 = { cx: 0,       cy: 0     };
-const hex2 = { cx: 1.5 * R, cy: H / 2 };
+const hex2 = { cx: W / 2,   cy: 1.5 * R };
 
 export default function GridBg({
     children,
@@ -24,7 +24,7 @@ export default function GridBg({
     const strokeW = 1.2;
 
     return (
-        <div {...props} className={twMerge(`bg-[var(--bg)]`, className)}>
+        <div {...props} className={twMerge(`bg-[var(--bg)] relative`, className)}>
             <svg
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 h-full w-full"
@@ -38,7 +38,7 @@ export default function GridBg({
                         <path d={hexPath(hex2.cx, hex2.cy, R)} />
                     </clipPath>
                     <clipPath id="clipC">
-                        <path d={hexPath(3 * R, 0, R)} />
+                        <path d={hexPath(0, 3 * R, R)} />
                     </clipPath>
 
                     <pattern
@@ -66,7 +66,7 @@ export default function GridBg({
                             opacity="1"
                         />
                         <path
-                            d={hexPath(3 * R, 0, R)}
+                            d={hexPath(0, 3 * R, R)}
                             fill="none"
                             stroke="var(--grid-stroke)"
                             strokeWidth={strokeW * 2}

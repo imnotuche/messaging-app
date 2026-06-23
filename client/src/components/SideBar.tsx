@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 import { useSettingsStore } from "../stores/settingsStore";
 
@@ -9,6 +10,7 @@ function SideBar(){
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const auth = useAuthStore();
+    const navigate = useNavigate();
     const settings = useSettingsStore();
 
     useEffect(() => {
@@ -22,11 +24,11 @@ function SideBar(){
     }, []);
 
     type NavItem = 
-    | "Chats"
+    | "Chat"
     | "Friends"
     | "Search"
     | "Settings";
-    const [active, setActive] = useState<NavItem>("Chats")
+    const [active, setActive] = useState<NavItem>("Chat")
 
     type MenuItem = 
     | "Profile"
@@ -89,20 +91,6 @@ function SideBar(){
 
     )
 
-    const ProfileIcon = () => (
-
-        <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            strokeWidth="2.5" 
-            stroke="currentColor"
-        >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-        </svg>
-
-    )
-
     const SignOutIcon = () => (
         
         <svg 
@@ -148,7 +136,7 @@ function SideBar(){
     const navBarItems : { name: NavItem; icon: React.ReactNode } [] = [
 
         {
-            name: "Chats",
+            name: "Chat",
             icon: <ChatsIcon/>,
         },
 
@@ -172,11 +160,6 @@ function SideBar(){
     const menuItems : { name: MenuItem; icon: React.ReactNode } [] = [
 
         {
-            name: "Profile",
-            icon: <ProfileIcon/>,
-        },
-
-        {
             name: "Sign Out",
             icon: <SignOutIcon/>
         },
@@ -198,7 +181,7 @@ function SideBar(){
         <>
 
             <div className="
-                bg-[#240f04]
+                bg-[var(--panel-bg)]
                 flex lg:flex-col
                 md:justify-center md:items-center
                 md:h-14 lg:h-full md:w-full lg:w-[15%]
@@ -208,7 +191,7 @@ function SideBar(){
                     hidden lg:flex items-center
                     w-full h-20
                     mb-5 pl-10
-                    text-2xl font-bold text-[#e8d5c4]
+                    text-2xl font-bold text-[var(--panel-text)]
                 ">Andora</h1>
 
                 <div className="
@@ -218,7 +201,7 @@ function SideBar(){
                     ml-8 md:ml-3 lg:ml-8
                     pb-2.5 md:pb-3.5 lg:pb-0
                     md:text-sm lg:text-base font-semibold
-                    text-[#8c6a56] 
+                    text-[var(--panel-sub)] 
                 ">
 
                     {navBarItems.map((n, i) => (
@@ -232,10 +215,11 @@ function SideBar(){
                             rounded-b-lg md:rounded-b-lg lg:rounded-none
                             md:rounded-l-0 lg:rounded-l-lg 
                             cursor-pointer
-                            ${active == `${n.name}` ? 'bg-[#f5ede6]' : ''}
+                            ${active == `${n.name}` ? 'bg-[var(--bg)] text-[var(--text)]' : ''}
                         `}
                         onClick={() => {
                             setActive(n.name)
+                            navigate(n.name.toLocaleLowerCase());
                         }}>
 
                             <span className="
@@ -261,14 +245,14 @@ function SideBar(){
                 onClick={() => setMenuOpen(p => !p)}>
 
                     <div className={`
-                        bg-[#f5ede6]
+                        bg-[var(--form-bg)]
                         absolute top-0  z-20 overflow-hidden
                         right-5 md:right-4 lg:right-1/2
                         -translate-y-full lg:translate-x-1/2
                         h-fit w-[110px] md:w-[120px] lg:w-[60%]
-                        rounded-lg border border-[#e0c8b8]
+                        rounded-lg border border-[var(--border)]
                         text-xs md:text-[0.8rem] font-bold
-                        text-[#8c6a56] 
+                        text-[var(--muted)] 
                         ${menuOpen ? 'block' : 'hidden'}
                     `}>
 
@@ -283,6 +267,7 @@ function SideBar(){
                                 className="
                                     flex justify-start items-center 
                                     w-full h-10 pl-3
+                                    hover:bg-[var(--input-bg)] text-[var(--text)]
                                 "
                                     onClick={(e) => {
                                         e.stopPropagation();
@@ -319,13 +304,13 @@ function SideBar(){
                         w-[70%]
                     ">
                         <p className="
-                            text-m font-medium text-[#f0dcc8]
+                            text-m font-medium text-[var(--panel-btn-color)]
                             truncate
                             leading-4
                         ">{auth.user.name}</p>
 
                         <p className="
-                            text-xs font-medium text-[#8c6a56]
+                            text-xs font-medium text-[var(--panel-sub)]
                             truncate
                             leading-4
                         "><span>@</span>{auth.user.username}</p>
