@@ -209,7 +209,7 @@ function SideBar(){
                 ">
 
                     {navBarItems.map((n, i) => {
-                        const isActive = location.pathname.toLowerCase().startsWith(n.path);
+                        const isActive = location.pathname.toLowerCase().startsWith(n.path.toLowerCase());
                         return (
                             <div key={i}
                             className={`
@@ -223,7 +223,7 @@ function SideBar(){
                                 ${isActive ? 'bg-[var(--bg)] text-[var(--text)]' : ''}
                             `}
                             onClick={() => {
-                                navigate(n.name.toLocaleLowerCase());
+                                navigate(n.path);
                             }}>
 
                                 <span className="
