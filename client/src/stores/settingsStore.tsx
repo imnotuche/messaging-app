@@ -7,7 +7,8 @@ type settingsStoreProps = {
 
 export const useSettingsStore = create <settingsStoreProps> () ((set) => ({
 
-    dark: false,
+    // Directly detects the presence of the dark class on initialize
+    dark: document.documentElement.classList.contains("dark"),
 
     changeTheme: () => { 
         

@@ -21,11 +21,6 @@ export default function SettingsPage() {
 
     const [activeEditField, setActiveEditField] = useState<keyof ProfileData | null>(null);
     const [editBuffer, setEditBuffer] = useState<string>("");
-    
-    const [compactMessages, setCompactMessages] = useState<boolean>(false);
-    const [readReceipts, setReadReceipts] = useState<boolean>(true);
-    const [theme, setTheme] = useState<"dark" | "light">("dark");
-
     const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
     useEffect(() => {
@@ -106,20 +101,6 @@ export default function SettingsPage() {
                 target.classList.remove("border-red-400", "shadow-[0_0_0_3px_rgba(248,113,113,0.15)]");
             }
         }, 2000);
-
-    };
-
-    const handleSignOut = () => {
-
-        alert("sign out protocol triggered");
-
-    };
-
-    const handleDelete = () => {
-
-        if (confirm("permanently delete your account? this action is irreversible.")) {
-            alert("delete account protocol executed");
-        }
 
     };
 
