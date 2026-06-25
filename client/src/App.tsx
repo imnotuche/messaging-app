@@ -9,6 +9,7 @@ import VerificationUI from "./components/VerificationUI";
 import SettingsPage from "./components/SettingsUI/SettingsPage";
 import UserProfile from "./components/UserProfile";
 import AllFriends from "./components/AllFriends";
+import Search from "./components/Search";
 
 function App() {
 
@@ -46,6 +47,7 @@ function App() {
                     <Route path="settings" element={<SettingsPage/>} />
                     <Route path="friends" element={<AllFriends/>} />
                     <Route path="friends/:username" element={<UserProfile/>} />
+                    <Route path="search" element={<Search/>} />
                 </Route>
 
             </Routes>

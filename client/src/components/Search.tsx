@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Avatar from "./UI/Avatar";
 
-function AllFriends(){
+function Search(){
 
     const [searchQuery, setSearchQuery] = useState ("");
 
@@ -38,7 +38,7 @@ function AllFriends(){
                         <p className={`
                             text-[var(--text)] text-base lg:text-lg  font-bold
                             transition-all duration-300 ease
-                        `}>Friends</p>
+                        `}>Search</p>
 
                     </div>
 
@@ -55,7 +55,7 @@ function AllFriends(){
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search friends..."
+                                placeholder="Search for people..."
                                 className="
                                     w-full pl-8 pr-3 py-2
                                     rounded-lg font-sans text-xs md:text-sm
@@ -116,7 +116,7 @@ function AllFriends(){
                                         truncate
                                         leading-5
                                         mb-[2px]
-                                    ">Friend Name</p>
+                                    ">Search Result Name</p>
 
                                     <p className="
                                         text-xs lg:text-sm 
@@ -124,7 +124,7 @@ function AllFriends(){
                                         truncate
                                         leading-5
                                     ">
-                                        Active now
+                                        @username_result
                                     </p>
 
                                 </div>
@@ -143,12 +143,12 @@ function AllFriends(){
                                 <button className="
                                     opacity-0 group-hover:opacity-100
                                     transition-all duration-200
-                                    p-1.5 rounded-lg
-                                    text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20
-                                " title="Remove Friend">
-                                    <svg className="size-4 md:size-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M22 10.5h-6m-2.25-1.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM1.5 19.5a8.25 8.25 0 0 1 15 0v.75H1.5v-.75Z" />
-                                    </svg>
+                                    px-3 py-1.5 rounded-lg
+                                    font-sans font-medium text-xs
+                                    bg-[var(--cta-bg)] text-[var(--cta-text)]
+                                    active:scale-[0.97]
+                                " title="Add Friend">
+                                    Add Friend
                                 </button>
 
                             </div>
@@ -177,4 +177,4 @@ function AllFriends(){
 
 }
 
-export default AllFriends;
+export default Search;
