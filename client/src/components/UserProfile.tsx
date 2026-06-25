@@ -31,9 +31,8 @@ export default function UserProfile({ user, onMessageClick }: UserProfileProps) 
                 bg-[var(--bg)]
                 relative overflow-hidden
                 flex flex-col
-                w-full md:flex-1 lg:w-[70%]
+                w-full h-full flex-1
                 rounded-xl 
-                m-2.5 md:m-3 mb-0 md:mb-0 lg:mb-3 lg:ml-0      
             ">
                 
                 {/* Header Mask */}

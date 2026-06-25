@@ -8,6 +8,7 @@ import ChatUI from "./components/ChatUI/ChatUI";
 import VerificationUI from "./components/VerificationUI";
 import SettingsPage from "./components/SettingsUI/SettingsPage";
 import UserProfile from "./components/UserProfile";
+import AllFriends from "./components/AllFriends";
 
 function App() {
 
@@ -43,6 +44,7 @@ function App() {
                 <Route element={<ProtectedLayout isAuthenticated = {auth.isAuthenticated} navbar = {true} />}>
                     <Route path="chat" element={<ChatUI/>} />
                     <Route path="settings" element={<SettingsPage/>} />
+                    <Route path="friends" element={<AllFriends/>} />
                     <Route path="friends/:username" element={<UserProfile/>} />
                 </Route>
 
