@@ -86,6 +86,7 @@ def sign_up():
                 "username" : row["username"],
                 "profile" : row["profile"],
                 "last_seen" : row["last_seen"],
+                "bio": row["bio"],
             }
         }))
 

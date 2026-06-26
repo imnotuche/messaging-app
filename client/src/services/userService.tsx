@@ -8,3 +8,16 @@ export async function getUserData(id : String){
     return response;
 
 }
+
+export async function updateUserData( data:{
+    name?: string;
+    username?: string;
+    profile?: string;
+    bio?: string;
+} ){
+
+    const response = await api.patch(`user/update-data`, data)
+    console.log(response);
+    return response;
+
+}

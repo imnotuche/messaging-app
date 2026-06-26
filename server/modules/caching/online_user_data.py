@@ -14,19 +14,13 @@ r = redis.Redis(
 def set_user_data(data):
     try:
         key = f"user:{data['user_id']}"
-        
-        #check for existing data
-        existing=r.get(key)
-        if existing:
-            print(f"{key} already exists in memory    source: {__name__}")
-            raise Exception(f"{key} already exists in memory")
-        
         r.set(key, json.dumps(data))
         r.expire(key, 3600)
         print(f"{key} loaded into memory")
     except Exception as e:
         print(f"{e}    source: {__name__}")
         raise Exception(f"{e}")
+
 
 #fetch and return user data in redis
 def fetch_user_data(id):

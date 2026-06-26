@@ -64,6 +64,7 @@ def log_in():
                 "username" : user["username"],
                 "profile" : user["profile"],
                 "last_seen" : user["last_seen"],
+                "bio": user["bio"],
             }
         }))
 

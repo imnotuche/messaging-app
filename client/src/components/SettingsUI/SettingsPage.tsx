@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, type ChangeEvent } from "react";
 import Avatar from "../UI/Avatar";
 
+import { useAuthStore } from "../../stores/authStore";
+
 
 type ProfileData = {
     name: string;
@@ -12,12 +14,7 @@ type ProfileData = {
 
 export default function SettingsPage() {
 
-    const [profile, setProfile] = useState<ProfileData>({
-        name: "Uche",
-        username: "@uche",
-        email: "uche@email.com",
-        bio: "building things quietly",
-    });
+    const auth = useAuthStore();
 
     const [activeEditField, setActiveEditField] = useState<keyof ProfileData | null>(null);
     const [editBuffer, setEditBuffer] = useState<string>("");
@@ -27,8 +24,15 @@ export default function SettingsPage() {
 
         if (activeEditField && inputRef.current) {
             inputRef.current.focus();
-            const len = inputRef.current.value.length;
-            inputRef.current.setSelectionRange(len, len);
+            
+            // Check if setSelectionRange is supported by the input type to avoid DOMExceptions
+            if (
+                inputRef.current instanceof HTMLTextAreaElement || 
+                (inputRef.current instanceof HTMLInputElement && ["text", "search", "url", "tel", "password"].includes(inputRef.current.type))
+            ) {
+                const len = inputRef.current.value.length;
+                inputRef.current.setSelectionRange(len, len);
+            }
         }
 
     }, [activeEditField]);
@@ -36,7 +40,8 @@ export default function SettingsPage() {
     const openEdit = (field: keyof ProfileData) => {
 
         setActiveEditField(field);
-        setEditBuffer(profile[field]);
+        // source data directly from global store properties
+        setEditBuffer(auth.user[field] || "");
 
     };
 
@@ -47,7 +52,7 @@ export default function SettingsPage() {
 
     };
 
-    const confirmEdit = (field: keyof ProfileData) => {
+    const confirmEdit = async (field: keyof ProfileData) => {
 
         let val = editBuffer.trim();
 
@@ -73,8 +78,18 @@ export default function SettingsPage() {
             }
         }
 
-        setProfile((prev) => ({ ...prev, [field]: val }));
-        setActiveEditField(null);
+        try {
+            // trigger asynchronous state database mutation updates cleanly
+            await auth.update({
+                [field]: field === "username" ? val.replace("@", "") : val
+            });
+
+            setActiveEditField(null);
+
+        } catch (err) {
+            console.error("Mutation failure state hook:", err);
+            shakeInputAnimation("Server sync error occurred");
+        }
 
     };
 
@@ -182,13 +197,13 @@ export default function SettingsPage() {
                                         <div className="
                                             font-sans text-lg md:text-xl font-medium tracking-[-0.01em] mb-0.5 text-[var(--text)]
                                         ">
-                                            {profile.name}
+                                            {auth.user.name}
                                         </div>
 
                                         <div className="
                                             font-mono text-xs text-[var(--muted)] tracking-[0.02em]
                                         ">
-                                            {profile.username}
+                                            <span>@</span>{auth.user.username}
                                         </div>
 
                                         <div className="
@@ -220,17 +235,20 @@ export default function SettingsPage() {
                                         <div onClick={() => openEdit("name")} className="
                                             flex items-center gap-[10px] cursor-pointer py-[2px] rounded-[6px]
                                         ">
-                                            <span className="font-sans text-sm text-[var(--text)]">{profile.name}</span>
+                                            <span className="font-sans text-sm text-[var(--text)]">{auth.user.name}</span>
+
                                             <span className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 text-[var(--muted)]">
                                                 <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
                                                     <path d="M11.5 2.5l2 2L5 13H3v-2L11.5 2.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
                                                 </svg>
                                             </span>
+
                                         </div>
                                     ) : (
                                         <div className="
                                             flex flex-col gap-2 mt-[6px]
                                         ">
+
                                             <input 
                                                 ref={inputRef as React.RefObject<HTMLInputElement>}
                                                 type="text" 
@@ -246,10 +264,12 @@ export default function SettingsPage() {
                                                     focus:border-[var(--border-hi)]
                                                 "
                                             />
+
                                             <div className="flex gap-2">
                                                 <button onClick={() => confirmEdit("name")} className="px-3 py-[6px] rounded-[6px] font-sans font-medium text-xs tracking-[0.01em] cursor-pointer transition-all active:scale-[0.97] bg-[var(--cta-bg)] text-[var(--cta-text)]">confirm</button>
                                                 <button onClick={cancelEdit} className="px-3 py-[6px] rounded-[6px] font-sans font-medium text-xs tracking-[0.01em] cursor-pointer transition-all active:scale-[0.97] bg-transparent border border-[var(--border)] text-[var(--muted)]">cancel</button>
                                             </div>
+
                                         </div>
                                     )}
 
@@ -267,7 +287,7 @@ export default function SettingsPage() {
                                         <div onClick={() => openEdit("username")} className="
                                             flex items-center gap-[10px] cursor-pointer py-[2px] rounded-[6px]
                                         ">
-                                            <span className="font-mono text-xs tracking-[0.02em] text-[var(--text)]">{profile.username}</span>
+                                            <span className="font-mono text-xs tracking-[0.02em] text-[var(--text)]">@{auth.user.username}</span>
                                             <span className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 text-[var(--muted)]">
                                                 <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
                                                     <path d="M11.5 2.5l2 2L5 13H3v-2L11.5 2.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
@@ -314,7 +334,7 @@ export default function SettingsPage() {
                                         <div onClick={() => openEdit("email")} className="
                                             flex items-center gap-[10px] cursor-pointer py-[2px] rounded-[6px]
                                         ">
-                                            <span className="font-sans text-sm text-[var(--text)]">{profile.email}</span>
+                                            <span className="font-sans text-sm text-[var(--text)]">{auth.user.email}</span>
                                             <span className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 text-[var(--muted)]">
                                                 <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
                                                     <path d="M11.5 2.5l2 2L5 13H3v-2L11.5 2.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
@@ -360,7 +380,7 @@ export default function SettingsPage() {
                                         <div onClick={() => openEdit("bio")} className="
                                             flex items-center gap-[10px] cursor-pointer py-[2px] rounded-[6px]
                                         ">
-                                            <span className="font-sans text-sm leading-relaxed text-[var(--text)]">{profile.bio}</span>
+                                            <span className="font-sans text-sm leading-relaxed text-[var(--text)]">{auth.user.bio}</span>
                                             <span className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 text-[var(--muted)]">
                                                 <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
                                                     <path d="M11.5 2.5l2 2L5 13H3v-2L11.5 2.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import { signUp, signIn, isLoggedIn, signOut } from "../services/authService";
-import { getUserData } from "../services/userService";
+import { getUserData, updateUserData } from "../services/userService";
 
 type authStoreProps = {
     isAuthenticated: boolean;
@@ -9,11 +9,19 @@ type authStoreProps = {
     user: {
         name: string;
         username: string;
+        email: string;
+        bio: string;
     };
     checkAuth: () => void;
     signIn: (user: object) => Promise<void>;
     signOut: () => Promise<void>;
     signUp: (user: object) => Promise<void>;
+    update: (data: { 
+        name?: string; 
+        username?: string; 
+        profile?: string; 
+        bio?: string; 
+    }) => Promise<void>;
 }
 
 export const useAuthStore = create <authStoreProps> () ((set) => ({
@@ -23,6 +31,8 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
     user: {
         name: "",
         username: "",
+        email: "",
+        bio: "",
     },
 
     checkAuth: async() => {
@@ -79,6 +89,8 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
                 user: {
                     name: "",
                     username: "",
+                    email: "",
+                    bio: "",
                 }
             })
             console.log(response);
@@ -103,6 +115,22 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
         }catch(err:any) {
             console.log(err);
         } 
+
+    },
+
+    update: async(data) => {
+
+        try {
+
+            const response = await updateUserData(data);
+            set({
+                user: response.data.payload
+            });
+            console.log(response.data.payload);
+
+        }catch(err: any) {
+            console.log(err);
+        }
 
     }
 
