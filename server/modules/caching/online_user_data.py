@@ -33,6 +33,7 @@ def fetch_user_data(id):
         
         data=json.loads(raw)
         r.expire(key, 3600) #reset expiry
+        print(f"{key} fetched from memory")
         return data
     except Exception as e:
         print(f"{e}    source: {__name__}")
