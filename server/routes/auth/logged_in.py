@@ -18,68 +18,71 @@ auth=Blueprint("loggedin", __name__)
 @auth.route("/logged-in", methods=["GET"])
 def logged_in():
     #verify existence of logged_in cookie
-    token=request.cookies.get("logged_in")
+    token = request.cookies.get("logged_in")
 
     conn = None
 
     if token:
-
         try:
-            payload=jwt.decode(token, secret, algorithms=["HS256"])
+            payload = jwt.decode(token, secret, algorithms=["HS256"])
         except Exception as e:
-            print(f"{e}   source:{__name__}") #log
-            response=make_response(jsonify({
-                "message":"invalid or expired token",
+            print(f"JWT Decode Error: {e}   source:{__name__}") #log
+            response = make_response(jsonify({
+                "message": "invalid or expired token",
                 "logged_in": False
-            })) #frontend response
+            }))
             return response, 401
         
         try:
-            id = payload["user"]["id"]
+            user_id = payload["user"]["id"]
             
-            #fetch user data from redis db
-            user = online_user_data.fetch_user_data(id)
+            # fetch user data from redis db
+            user = online_user_data.fetch_user_data(user_id)
             
             if not user:
-                #use id to fetch data from the db
-                conn, cursor=database.connect() 
+                # use id to fetch data from the db (explicitly include id here)
+                conn, cursor = database.connect() 
                 cursor.execute(
-                    "SELECT name, email, username, profile, bio, last_seen  FROM users WHERE id = ?",
-                    (id,)
+                    "SELECT id, name, email, username, profile, bio, last_seen FROM users WHERE id = ?",
+                    (user_id,)
                 )
-                user = cursor.fetchone()
+                row = cursor.fetchone()
                 
-                #if user dosent exist
-                if not user:
+                # if user doesn't exist
+                if not row:
                     print(f"User not found   source:{__name__}") 
-                    return jsonify({"message":"Account does not exist"}), 404
+                    return jsonify({"message": "Account does not exist"}), 404
                 
+                # Convert the database row into a clean dictionary
                 user = {
-                    "name" : user["name"],
-                    "email" : user["email"],
-                    "username" : user["username"],
-                    "profile" : user["profile"],
-                    "last_seen" : user["last_seen"],
-                    "bio": user["bio"],
+                    "user_id": row["id"],  # Maps to data['user_id'] inside your Redis module
+                    "name": row["name"],
+                    "email": row["email"],
+                    "username": row["username"],
+                    "profile": row["profile"],
+                    "last_seen": row["last_seen"],
+                    "bio": row["bio"],
                 }
                 
-                #load into redis
+                # load into redis
                 online_user_data.set_user_data(user)
             
-        except Exception as e:
-            print(f"{e}   source:{__name__}") #log
-        finally:
-            conn.close()
+            print(f"logged in   source:{__name__}") #log
+            response = make_response(jsonify({
+                "message": "valid session",
+                "logged_in": True,
+                "payload": user
+            }))
+            return response, 200 #frontend response
 
-        print(f"logged in   source:{__name__}") #log
-        response=make_response(jsonify({
-            "message":"valid session",
-            "logged_in": True,
-            "payload": user
-        }))
-        return response, 200 #frontend response
+        except Exception as e:
+            print(f"Database/Cache Error: {e}   source:{__name__}") #log
+            return jsonify({"message": "Server error processing user session", "logged_in": False}), 500
+        finally:
+            if conn:
+                conn.close()
     
     else:
         print(f"not logged in   source:{__name__}") #log
-        response=make_response(jsonify({"logged_in": False}))
+        response = make_response(jsonify({"logged_in": False}))
         return response, 401 #frontend response
