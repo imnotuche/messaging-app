@@ -44,15 +44,9 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
             let response = await isLoggedIn();
             console.log(response)
             set({
-                isAuthenticated: response.data.logged_in
-            });
-
-            response = await getUserData(response.data.payload.user.id);
-            set({
+                isAuthenticated: response.data.logged_in,
                 user: response.data.payload
-            })
-
-            console.log(response);
+            });
 
         }catch(err){
             console.log(err)
