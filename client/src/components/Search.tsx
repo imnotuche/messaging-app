@@ -1,52 +1,39 @@
 import { useState, useEffect } from "react";
 import Avatar from "./UI/Avatar";
-import { getUsers } from "../services/userService"; // Adjust this path to your actual file structure
-
-// Define the interface for the expected User data structure
-interface User {
-    id: string; // or number, depending on your backend
-    name: string;
-    username: string;
-    profile?: string;
-    bio?: string;
-}
+import { useSearchStore } from "../stores/searchStore";
 
 function Search() {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState<User[]>([]);
+    // Grouping the entire store slice under a single object identifier
+    const searchStore = useSearchStore();
+
     const [isLoading, setIsLoading] = useState(false);
 
-    // Handles the side effect whenever searchQuery changes (Equivalent to Vue's watch + timeout)
     useEffect(() => {
-        // Immediately clear results if query is empty
-        if (!searchQuery.trim()) {
-            setSearchResults([]);
+        // Clear global array state instantly if input field becomes empty
+        if (!searchStore.searchUserQuery.trim()) {
+            searchStore.clearSearch();
             return;
         }
 
-        setIsLoading(true);
+        // Avoid showing loader spinner if data is already populated from our store cache
+        if (searchStore.searchUserResults.length === 0) {
+            setIsLoading(true);
+        }
 
-        // Debounce: Wait 500ms after the user stops typing before making the network request
         const delayDebounceFn = setTimeout(async () => {
-
+            setIsLoading(true);
             try {
-                // Construct query string format expected by your service
-                const queryString = `query=${encodeURIComponent(searchQuery)}`;
-                const response = await getUsers(queryString);
-                //Load serch results
-                const result = response.data.payload
-                setSearchResults(result);
+                const queryString = `query=${encodeURIComponent(searchStore.searchUserQuery)}`;
+                await searchStore.searchUser(queryString);
             } catch (error) {
-                console.error("Error fetching users:", error);
+                console.error(error);
             } finally {
                 setIsLoading(false);
             }
-            
         }, 500);
 
-        // Cleanup function clears the timeout if the user types another character before 500ms
         return () => clearTimeout(delayDebounceFn);
-    }, [searchQuery]);
+    }, [searchStore.searchUserQuery, searchStore.searchUser, searchStore.clearSearch]);
 
     return (
         <>
@@ -92,8 +79,8 @@ function Search() {
                             </span>
                             <input 
                                 type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                value={searchStore.searchUserQuery}
+                                onChange={(e) => searchStore.setSearchQuery(e.target.value)}
                                 placeholder="Search for people..."
                                 className="
                                     w-full pl-8 pr-3 py-2
@@ -104,7 +91,9 @@ function Search() {
                                     focus:outline-none
                                 "
                             />
+
                         </div>
+
                     </div>
 
                 </div>
@@ -115,18 +104,17 @@ function Search() {
                     scrollbar-light
                     my-14 md:my-16 p-3
                 ">
+
                     <div className="w-full">
-                        {/* Status Message Handling */}
                         {isLoading && (
                             <p className="text-xs text-[var(--muted)] px-3 py-2">Searching...</p>
                         )}
 
-                        {!isLoading && searchQuery && searchResults.length === 0 && (
+                        {!isLoading && searchStore.searchUserQuery && searchStore.searchUserResults.length === 0 && (
                             <p className="text-xs text-[var(--muted)] px-3 py-2">No users found.</p>
                         )}
 
-                        {/* Dynamic Rendering Loop using .map */}
-                        {!isLoading && searchResults.map((user) => (
+                        {!isLoading && searchStore.searchUserResults.map((user) => (
                             <div key={user.id} className={`
                                 flex items-center justify-between
                                 w-[100%] h-16
@@ -155,6 +143,7 @@ function Search() {
                                         w-[70%] ml-3
                                         min-w-0
                                     `}>
+
                                         <p className="
                                             text-sm md:text-base 
                                             font-semibold text-[var(--text)]
@@ -171,12 +160,17 @@ function Search() {
                                         ">
                                             @{user.username}
                                         </p>
+
                                     </div>
+
                                 </div>
 
                             </div>
+
                         ))}
+
                     </div>
+
                 </div>
 
                 <div className="
