@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import { signUp, signIn, isLoggedIn, signOut } from "../services/authService";
-import { getUserData, updateUserData } from "../services/userService";
+import { updateUserData } from "../services/userService";
 
 type authStoreProps = {
     isAuthenticated: boolean;

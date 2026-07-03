@@ -1,14 +1,55 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Avatar from "./UI/Avatar";
+import { getUsers } from "../services/userService"; // Adjust this path to your actual file structure
 
-function Search(){
+// Define the interface for the expected User data structure
+interface User {
+    id: string; // or number, depending on your backend
+    name: string;
+    username: string;
+    profile?: string;
+    bio?: string;
+}
 
-    const [searchQuery, setSearchQuery] = useState ("");
+function Search() {
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState<User[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Handles the side effect whenever searchQuery changes (Equivalent to Vue's watch + timeout)
+    useEffect(() => {
+        // Immediately clear results if query is empty
+        if (!searchQuery.trim()) {
+            setSearchResults([]);
+            return;
+        }
+
+        setIsLoading(true);
+
+        // Debounce: Wait 500ms after the user stops typing before making the network request
+        const delayDebounceFn = setTimeout(async () => {
+
+            try {
+                // Construct query string format expected by your service
+                const queryString = `query=${encodeURIComponent(searchQuery)}`;
+                const response = await getUsers(queryString);
+                //Load serch results
+                const result = response.data.payload
+                setSearchResults(result);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            } finally {
+                setIsLoading(false);
+            }
+            
+        }, 500);
+
+        // Cleanup function clears the timeout if the user types another character before 500ms
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchQuery]);
 
     return (
-
         <>
-
             <div className={`
                 bg-[var(--bg)] shadow-[0_8px_32px_rgba(15,23,42,0.06)]
                 relative z-0
@@ -34,12 +75,10 @@ function Search(){
                         flex items-center
                         shrink-0
                     `}>
-
                         <p className={`
                             text-[var(--text)] text-base lg:text-lg  font-bold
                             transition-all duration-300 ease
                         `}>Search</p>
-
                     </div>
 
                     <div className={`
@@ -76,88 +115,68 @@ function Search(){
                     scrollbar-light
                     my-14 md:my-16 p-3
                 ">
+                    <div className="w-full">
+                        {/* Status Message Handling */}
+                        {isLoading && (
+                            <p className="text-xs text-[var(--muted)] px-3 py-2">Searching...</p>
+                        )}
 
-                    <div className="
-                        w-full
-                    ">
+                        {!isLoading && searchQuery && searchResults.length === 0 && (
+                            <p className="text-xs text-[var(--muted)] px-3 py-2">No users found.</p>
+                        )}
 
-                        <div className={`
-                            flex items-center justify-between
-                            w-[100%] h-16
-                            md:mb-0 lg:mb-3
-                            px-3 md:px-4 lg:px-5
-                            rounded-xl
-                            hover:bg-[var(--form-bg)]
-                            transition-colors duration-200
-                            group relative
-                        `}>
+                        {/* Dynamic Rendering Loop using .map */}
+                        {!isLoading && searchResults.map((user) => (
+                            <div key={user.id} className={`
+                                flex items-center justify-between
+                                w-[100%] h-16
+                                md:mb-0 lg:mb-3
+                                px-3 md:px-4 lg:px-5
+                                rounded-xl
+                                hover:bg-[var(--form-bg)]
+                                transition-colors duration-200
+                                group relative
+                            `}>
 
-                            <div className="
-                                flex items-center 
-                                flex-1 min-w-0
-                                cursor-pointer
-                            ">
+                                <div className="
+                                    flex items-center 
+                                    flex-1 min-w-0
+                                    cursor-pointer
+                                ">
+                                    <Avatar 
+                                        imageSrc={user.profile} 
+                                        imageClassName="h-9 md:h-10 lg:h-12" 
+                                    />
 
-                                <Avatar imageClassName="
-                                    h-9 md:h-10 lg:h-12
-                                " />
+                                    <div className={`
+                                        block
+                                        opacity-100
+                                        translate-x-0
+                                        w-[70%] ml-3
+                                        min-w-0
+                                    `}>
+                                        <p className="
+                                            text-sm md:text-base 
+                                            font-semibold text-[var(--text)]
+                                            truncate
+                                            leading-5
+                                            mb-[2px]
+                                        ">{user.name}</p>
 
-                                <div className={`
-                                    block
-                                    opacity-100
-                                    translate-x-0
-                                    w-[70%] ml-3
-                                    min-w-0
-                                `}>
-
-                                    <p className="
-                                        text-sm md:text-base 
-                                        font-semibold text-[var(--text)]
-                                        truncate
-                                        leading-5
-                                        mb-[2px]
-                                    ">Search Result Name</p>
-
-                                    <p className="
-                                        text-xs lg:text-sm 
-                                        font-medium text-[var(--muted)]
-                                        truncate
-                                        leading-5
-                                    ">
-                                        @username_result
-                                    </p>
-
+                                        <p className="
+                                            text-xs lg:text-sm 
+                                            font-medium text-[var(--muted)]
+                                            truncate
+                                            leading-5
+                                        ">
+                                            @{user.username}
+                                        </p>
+                                    </div>
                                 </div>
 
                             </div>
-
-                            <div className={`
-                                flex
-                                flex-row
-                                justify-center items-center 
-                                opacity-100
-                                translate-x-0
-                                ml-4
-                            `}>
-                                
-                                <button className="
-                                    opacity-0 group-hover:opacity-100
-                                    transition-all duration-200
-                                    px-3 py-1.5 rounded-lg
-                                    font-sans font-medium text-xs
-                                    bg-[var(--cta-bg)] text-[var(--cta-text)]
-                                    active:scale-[0.97]
-                                " title="Add Friend">
-                                    Add Friend
-                                </button>
-
-                            </div>
-
-                        </div>
-
-
+                        ))}
                     </div>
-
                 </div>
 
                 <div className="
@@ -165,16 +184,14 @@ function Search(){
                     flex items-center
                     rounded-b-xl 
                     w-full h-12
+                    pointer-events-none
                 "
                 style={{ background: "var(--chat-bottom-mask)" }}
                 ></div>
 
             </div>
-
         </>
-
     );
-
 }
 
 export default Search;

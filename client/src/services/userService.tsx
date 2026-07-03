@@ -1,9 +1,9 @@
 import api from "../api"
 
 
-export async function getUserData(id : String){
+export async function getUsers(query : String){
 
-    const response = await api.get(`user/fetch-data/${id}`);
+    const response = await api.get(`user/search?${query}`);
     console.log(response);
     return response;
 
@@ -21,3 +21,4 @@ export async function updateUserData( data:{
     return response;
 
 }
+

@@ -10,50 +10,66 @@ from modules.caching import online_user_data
 #initialzing route name and filepath
 user=Blueprint("user", __name__)
 
-#route to fetch user data by id
-@user.route("/fetch-data/<id>", methods=["GET"])
-def fetch_data(id):
+# route to search users dynamically using fuzzy matching and smart username detection
+@user.route("/search", methods=["GET"])
+def search_users():
     
     conn=None
     try:
-        #fetch data from redis db
-        data=online_user_data.fetch_user_data(id)
+        # extract search query from parameters
+        query=request.args.get("query", "").strip()
+        if not query:
+            print(f"Empty search query submitted    source: {__name__}") #log message
+            return jsonify({"message": "Query parameter is required", "payload": []}), 400 #frontend response
+            
+        conn, cursor=database.connect()
         
-        #fetch from db and load into redis if not found
-        if not data:
-            conn, cursor=database.connect()
+        # detect weather its a username search if it starts with an @
+        if query.startswith("@"):
+            clean_username = query[1:] # strip the @ symbol out
+            search_pattern = f"%{clean_username}%"
+            
             cursor.execute(
                 """
-                    SELECT name, email, username, profile, bio, last_seen FROM users
-                    WHERE id = ?
+                    SELECT id, name, email, username, profile, bio, last_seen FROM users
+                    WHERE username LIKE ?
                 """,
-                (id,)
+                (search_pattern,)
             )
-            data_row=cursor.fetchone()
+        else:
+            search_pattern = f"%{query}%"
             
-            if not data_row:
-                print(f"User does not exist   source: {__name__}") #log message
-                return jsonify({"message":"User does not exist"}), 404
+            # search across name, username, and email fields
+            cursor.execute(
+                """
+                    SELECT id, name, email, username, profile, bio, last_seen FROM users
+                    WHERE name LIKE ? OR username LIKE ? OR email LIKE ?
+                """,
+                (search_pattern, search_pattern, search_pattern)
+            )
             
-            data={
-                "user_id": id,
-                "name": data_row["name"],
-                "email": data_row["email"],
-                "username": data_row["username"],
-                "profile": data_row["profile"],
-                "bio": data_row["bio"],
-                "last_seen" : data_row["last_seen"],
-            }
+        rows=cursor.fetchall()
+        results=[]
+        
+        # loop through findings and clean into readable list dictionaries
+        for row in rows:
+            results.append({
+                "user_id": row["id"],
+                "name": row["name"],
+                "email": row["email"],
+                "username": row["username"],
+                "profile": row["profile"],
+                "bio": row["bio"],
+                "last_seen": row["last_seen"],
+            })
             
-            #load into redis
-            online_user_data.set_user_data(data)
-            
-        return jsonify({"message":"Success", "payload": data}), 200 #frontend response
+        print(f"Successfully matched {len(results)} items for query '{query}'    source: {__name__}") #log message
+        return jsonify({"message": "Success", "payload": results}), 200 #frontend response
             
     except Exception as e:
         print(f"Error: {e}    source: {__name__}") #log message
-        return jsonify({"message":"Server error"}), 500 #frontend response
-    
+        return jsonify({"message": "Server error"}), 500 #frontend response
+        
     finally:
         if conn:
             conn.close()
