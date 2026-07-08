@@ -3,7 +3,7 @@ import { getUsers } from "../services/userService";
 
 // Capitalize type definitions for consistency
 type User = {
-    id: string;
+    user_id: string;
     name: string;
     username: string;
     profile: string;
@@ -33,8 +33,6 @@ export const useSearchStore = create<SearchStoreProps>()((set) => ({
     searchUser: async (query) => {
         try {
             const response = await getUsers(query);
-            
-            // Fixed: Enclosed the key-value update inside a proper object wrapper
             set({ searchUserResults: response.data.payload || [] });
         } catch (error) {
             console.error("Error fetching users:", error);

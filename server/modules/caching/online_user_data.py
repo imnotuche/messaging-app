@@ -40,3 +40,31 @@ def fetch_user_data(id):
         raise Exception(f"{e}")
 
 
+#scan memory keys and return partial profile matches
+def search_cached_profiles(query):
+    try:
+        matched_profiles = []
+        lower_query = query.lower()
+        
+        # safely iterate over all keys matching the user pattern
+        for key in r.scan_iter("user:*"):
+            raw = r.get(key)
+            if raw:
+                data = json.loads(raw)
+                
+                # check for substring match across username, name, and email fields
+                username = data.get("username", "").lower()
+                name = data.get("name", "").lower()
+                email = data.get("email", "").lower()
+                
+                if lower_query in username or lower_query in name or lower_query in email:
+                    matched_profiles.append(data)
+                    
+        if matched_profiles:
+            print(f"Matched {len(matched_profiles)} partial queries from scan    source: {__name__}")
+            
+        return matched_profiles
+    except Exception as e:
+        print(f"{e}    source: {__name__}")
+        raise Exception(f"{e}")
+

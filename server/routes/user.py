@@ -10,6 +10,61 @@ from modules.caching import online_user_data
 #initialzing route name and filepath
 user=Blueprint("user", __name__)
 
+#route to get user by id or username
+@user.route("/get-user", methods=["GET"])
+def get_user():
+    
+    conn = None 
+    try:
+        # extract search query from parameters
+        query = request.args.get("query", "").strip()
+        if not query:
+            print(f"Empty user query submitted    source: {__name__}") #log message
+            return jsonify({"message": "Query parameter is required", "payload": None}), 400 #frontend response
+        
+        # fetch user data from redis db
+        user = online_user_data.fetch_user_data(query)
+        #if user dosent exist
+        if not user:
+            conn, cursor = database.connect()
+            cursor.execute(
+                """
+                    SELECT id, name, email, username, profile, bio, last_seen FROM users
+                    WHERE id = ?
+                """,
+                (query,)
+            )
+                
+            row = cursor.fetchone()
+            if not row:
+                print(f"No profile matches discovered for query '{query}'    source: {__name__}") #log message
+                return jsonify({"message": "The requested user profile could not be located.", "payload": None}), 404 #frontend response
+            
+            # clean into readable targeted dictionary format payload structure
+            user = {
+                "user_id": row["id"],
+                "name": row["name"],
+                "email": row["email"],
+                "username": row["username"],
+                "profile": row["profile"],
+                "bio": row["bio"],
+                "last_seen": row["last_seen"],
+            }
+            
+            # load into redis
+            online_user_data.set_user_data(user)
+        
+        print(f"Successfully located profile record details for '{query}'    source: {__name__}") #log message
+        return jsonify({"message": "Success", "payload": user}), 200 #frontend response
+            
+    except Exception as e:
+        print(f"Error: {e}    source: {__name__}") #log message
+        return jsonify({"message": "Server error"}), 500 #frontend response
+        
+    finally:
+        if conn:
+            conn.close()
+
 # route to search users dynamically using fuzzy matching and smart username detection
 @user.route("/search", methods=["GET"])
 def search_users():

@@ -1,21 +1,20 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Avatar from "./UI/Avatar";
 import { useSearchStore } from "../stores/searchStore";
 
 function Search() {
-    // Grouping the entire store slice under a single object identifier
     const searchStore = useSearchStore();
+    const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        // Clear global array state instantly if input field becomes empty
         if (!searchStore.searchUserQuery.trim()) {
             searchStore.clearSearch();
             return;
         }
 
-        // Avoid showing loader spinner if data is already populated from our store cache
         if (searchStore.searchUserResults.length === 0) {
             setIsLoading(true);
         }
@@ -91,9 +90,7 @@ function Search() {
                                     focus:outline-none
                                 "
                             />
-
                         </div>
-
                     </div>
 
                 </div>
@@ -104,7 +101,6 @@ function Search() {
                     scrollbar-light
                     my-14 md:my-16 p-3
                 ">
-
                     <div className="w-full">
                         {isLoading && (
                             <p className="text-xs text-[var(--muted)] px-3 py-2">Searching...</p>
@@ -115,21 +111,26 @@ function Search() {
                         )}
 
                         {!isLoading && searchStore.searchUserResults.map((user) => (
-                            <div key={user.id} className={`
-                                flex items-center justify-between
-                                w-[100%] h-16
-                                md:mb-0 lg:mb-3
-                                px-3 md:px-4 lg:px-5
-                                rounded-xl
-                                hover:bg-[var(--form-bg)]
-                                transition-colors duration-200
-                                group relative
-                            `}>
-
+                            <div 
+                                key={user.user_id} 
+                                onClick={() => {
+                                    // Direct layout route push triggers automatic component useEffect mounting above
+                                    navigate(`/friends/${user.user_id}`); 
+                                }}
+                                className={`
+                                    flex items-center justify-between
+                                    w-[100%] h-16
+                                    md:mb-0 lg:mb-3
+                                    px-3 md:px-4 lg:px-5
+                                    rounded-xl
+                                    hover:bg-[var(--form-bg)]
+                                    transition-colors duration-200
+                                    group relative cursor-pointer
+                                `}
+                            >
                                 <div className="
                                     flex items-center 
                                     flex-1 min-w-0
-                                    cursor-pointer
                                 ">
                                     <Avatar 
                                         imageSrc={user.profile} 
@@ -143,7 +144,6 @@ function Search() {
                                         w-[70%] ml-3
                                         min-w-0
                                     `}>
-
                                         <p className="
                                             text-sm md:text-base 
                                             font-semibold text-[var(--text)]
@@ -160,17 +160,11 @@ function Search() {
                                         ">
                                             @{user.username}
                                         </p>
-
                                     </div>
-
                                 </div>
-
                             </div>
-
                         ))}
-
                     </div>
-
                 </div>
 
                 <div className="

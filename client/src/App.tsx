@@ -46,7 +46,10 @@ function App() {
                     <Route path="chat" element={<ChatUI/>} />
                     <Route path="settings" element={<SettingsPage/>} />
                     <Route path="friends" element={<AllFriends/>} />
-                    <Route path="friends/:username" element={<UserProfile/>} />
+                    
+                    {/* Captures parameters like "1" or dynamically */}
+                    <Route path="friends/:id" element={<UserProfile/>} />
+                    
                     <Route path="search" element={<Search/>} />
                 </Route>
 

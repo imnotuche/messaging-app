@@ -1,6 +1,14 @@
 import api from "../api"
 
 
+export async function getUser(query : String){
+
+    const response = await api.get(`user/get-user?query=${query}`);
+    console.log(response);
+    return response;
+
+}
+
 export async function getUsers(query : String){
 
     const response = await api.get(`user/search?${query}`);
