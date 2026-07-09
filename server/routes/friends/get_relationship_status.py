@@ -50,7 +50,7 @@ def get_relationship_status():
         # If no relationship has ever been initiated between these users, return a clean empty object
         if not row:
             print(f"No relationship record exists    source:{__name__}") #log message
-            return jsonify({}), 200 #frontend response
+            return jsonify({"status": "none",}), 200 #frontend response
 
         relationship_details = {
             "status": row["status"],

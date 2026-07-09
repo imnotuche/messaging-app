@@ -18,7 +18,13 @@ from routes.auth import log_in
 from routes.auth import log_out
 from routes.auth import verify_email
 from routes.auth import logged_in
-from routes import friends
+from routes.friends import send_request
+from routes.friends import accept_request
+from routes.friends import reject_request
+from routes.friends import block_user
+from routes.friends import unblock_user
+from routes.friends import get_friends
+from routes.friends import get_relationship_status
 from routes.caching import user_presence_caching
 from routes import user
 
@@ -71,7 +77,13 @@ app.register_blueprint(log_in.auth, url_prefix="/auth")
 app.register_blueprint(log_out.auth, url_prefix="/auth")
 app.register_blueprint(verify_email.verification, url_prefix="/auth")
 app.register_blueprint(logged_in.auth, url_prefix="/auth")
-app.register_blueprint(friends.friend, url_prefix="/friends")
+app.register_blueprint(send_request.friend, url_prefix="/friends")
+app.register_blueprint(accept_request.friend, url_prefix="/friends")
+app.register_blueprint(reject_request.friend, url_prefix="/friends")
+app.register_blueprint(block_user.friend, url_prefix="/friends")
+app.register_blueprint(unblock_user.friend, url_prefix="/friends")
+app.register_blueprint(get_friends.friend, url_prefix="/friends")
+app.register_blueprint(get_relationship_status.friend, url_prefix="/friends")
 app.register_blueprint(user_presence_caching.cache, url_prefix="/cache")
 app.register_blueprint(user.user, url_prefix="/user")
 

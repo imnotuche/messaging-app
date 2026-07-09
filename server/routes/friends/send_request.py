@@ -13,7 +13,7 @@ friend=Blueprint("friend", __name__)
 #route to send friend request
 @friend.route("/friend-request", methods=["POST"])
 def send_friend_request():
-    data=request.get_json()
+    data=request.args
     conn = None
 
     #initialize db and create friendship table

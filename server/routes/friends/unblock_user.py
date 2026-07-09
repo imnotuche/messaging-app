@@ -14,7 +14,7 @@ friend=Blueprint("friend", __name__)
 #route to unblock a user          
 @friend.route("/unblock-user", methods=["POST"])
 def unblock_user():
-    data=request.get_json()
+    data=request.args
     conn=None
     
     try:

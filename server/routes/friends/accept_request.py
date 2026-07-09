@@ -14,7 +14,7 @@ friend=Blueprint("friend", __name__)
 #route to accept friend request
 @friend.route("/accept-request", methods=["POST"])
 def accept_request():
-    data=request.get_json()
+    data=request.args
     conn=None
     
     try:

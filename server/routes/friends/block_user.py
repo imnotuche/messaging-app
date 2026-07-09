@@ -14,7 +14,7 @@ friend=Blueprint("friend", __name__)
 #route to block users 
 @friend.route("/block-user", methods=["POST"])
 def block_user():
-    data=request.get_json()
+    data=request.args
     conn=None
     
     try:

@@ -11,36 +11,32 @@ from modules.database_modules import database
 friend=Blueprint("friend", __name__)
 
 
-#route to reject friend request
-@friend.route("/reject-request", methods=["POST"])
-def reject_request():
+#route to cancel friend request
+@friend.route("/cancel-request", methods=["POST"])
+def cancel_request():
     data=request.args
     conn=None
     
     try:
-        #find and change field value in the db
+        #find and delete field value from the db
         conn, cursor=database.connect()
         cursor.execute(
-            """
-                UPDATE friendships
-                SET status = ?,
-                    last_action = ?,
-                    updated_at = CURRENT_TIMESTAMP
-                WHERE user_1 = ? AND user_2 = ?
+            f"""
+                DELETE FROM friendships
+                WHERE user_1 = ? AND user_2 = ? AND status = ?
             """,
             (
-                "rejected",
-                data["user_id"],
-                min(data["user_id"], data["sent_from"]),
-                max(data["user_id"], data["sent_from"])
+                min(int(data["user_id"]), int(data["sent_to"])),
+                max(int(data["user_id"]), int(data["sent_to"])),
+                "pending"
             )
         )
         
         conn.commit()
         
         print(f"Successfully sent response    source:{__name__}") #log message
-        return jsonify({"message":f"You rejected @{data['from_username']}'s friend request"}), 200 #frontend response
-
+        return jsonify({"message":f"Friend request to @{data['to_username']} cancelled"}), 200 #frontend response
+    
     except Exception as e:
         print(f"error: {str(e)}  source: {__name__}") #log message
         return jsonify({"message":"Server error"}), 500 #frontend response
