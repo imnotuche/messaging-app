@@ -59,7 +59,7 @@ function TextBubble({
                     `}>{textContent}</p>
 
                     <div className={`
-                        ${isMe ? 'text-[var(--text)]' : 'text-[var(--muted)]'}
+                        ${isMe ? 'text-[var(--cta-text)]' : 'text-[var(--muted)]'}
                         text-[10px] lg:text-xs font-semibold
                         flex justify-end
                         h-fit w-full
