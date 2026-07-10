@@ -3,14 +3,10 @@ import os
 import jwt
 from flask import Blueprint, jsonify, request
 import json
-
 #import user created modules
 from modules.database_modules import database
-
 #initialzing route name and filepath
 friend=Blueprint("unblock", __name__)
-
-
 #route to unblock a user          
 @friend.route("/unblock-user", methods=["POST"])
 def unblock_user():
@@ -27,12 +23,21 @@ def unblock_user():
                 WHERE user_1 = ? AND user_2 = ? AND status = ?
             ''',
             (
-                min(data["user_id"], data["unblock_user_id"]),
-                max(data["user_id"], data["unblock_user_id"]),
+                min(int(data["user_id"]), int(data["unblock_user_id"])),
+                max(int(data["user_id"]), int(data["unblock_user_id"])),
                 "blocked"
             )
         )
         row=cursor.fetchone()
+        
+        #if no record found, nothing to unblock
+        if not row:
+            print(f"No blocked record found to unblock    source:{__name__}") #log message
+            return jsonify({"message":"Server error"}), 500 #frontend response
+        
+        #default values in case there was no previous relationship
+        restored_status="none"
+        restored_last_action=None
         
         #if no previous existing relationship
         #clear row and return response
@@ -44,13 +49,15 @@ def unblock_user():
                     WHERE user_1 = ? AND user_2 = ?
                 ''',
                 (
-                    min(data["user_id"], data["unblock_user_id"]),
-                    max(data["user_id"], data["unblock_user_id"])
+                    min(int(data["user_id"]), int(data["unblock_user_id"])),
+                    max(int(data["user_id"]), int(data["unblock_user_id"]))
                 )
             )
-
         else:
             previous=json.loads(row["blocked"])
+            restored_status=previous["previous_status"]
+            restored_last_action=previous["previous_last_action"]
+            
             #update record in the friendship table
             cursor.execute(
                 '''
@@ -64,14 +71,18 @@ def unblock_user():
                 (
                     previous["previous_status"],
                     previous["previous_last_action"],
-                    min(data["user_id"], data["unblock_user_id"]),
-                    max(data["user_id"], data["unblock_user_id"])
+                    min(int(data["user_id"]), int(data["unblock_user_id"])),
+                    max(int(data["user_id"]), int(data["unblock_user_id"]))
                 )
             )
         conn.commit()
         
         print(f"Successfully unblocked user    source:{__name__}") #log message
-        return jsonify({"message":f"You unblocked @{data['unblocked_username']}"}), 200 #frontend response
+        return jsonify({
+            "message":f"User unblocked successfully",
+            "status":restored_status,
+            "last_action":restored_last_action
+        }), 200 #frontend response
         
     except Exception as e:
         print(f"error: {str(e)}  source: {__name__}") #log message
