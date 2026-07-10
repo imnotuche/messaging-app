@@ -7,6 +7,7 @@ type authStoreProps = {
     isAuthenticated: boolean;
     isLoading: boolean;
     user: {
+        id: string;
         name: string;
         username: string;
         email: string;
@@ -29,6 +30,7 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
     isAuthenticated: false,
     isLoading: true,
     user: {
+        id: "",
         name: "",
         username: "",
         email: "",
@@ -81,6 +83,7 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
             set({
                 isAuthenticated: false,
                 user: {
+                    id: "",
                     name: "",
                     username: "",
                     email: "",

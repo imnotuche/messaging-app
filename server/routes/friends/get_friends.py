@@ -8,7 +8,7 @@ import json
 from modules.database_modules import database
 
 #initialzing route name and filepath
-friend=Blueprint("friend", __name__)
+friend=Blueprint("friends", __name__)
 
 
 #route to fetch all friends for the logged-in user

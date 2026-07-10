@@ -8,7 +8,7 @@ import json
 from modules.database_modules import database
 
 #initialzing route name and filepath
-friend=Blueprint("friend", __name__)
+friend=Blueprint("status", __name__)
 
 
 #route to get the individual relationship status between two users

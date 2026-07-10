@@ -8,7 +8,7 @@ import json
 from modules.database_modules import database
 
 #initialzing route name and filepath
-friend=Blueprint("friend", __name__)
+friend=Blueprint("cancel", __name__)
 
 
 #route to cancel friend request
@@ -35,7 +35,7 @@ def cancel_request():
         conn.commit()
         
         print(f"Successfully sent response    source:{__name__}") #log message
-        return jsonify({"message":f"Friend request to @{data['to_username']} cancelled"}), 200 #frontend response
+        return jsonify({"message":f"Friend request cancelled"}), 200 #frontend response
     
     except Exception as e:
         print(f"error: {str(e)}  source: {__name__}") #log message

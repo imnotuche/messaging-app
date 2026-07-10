@@ -8,7 +8,7 @@ import json
 from modules.database_modules import database
 
 #initialzing route name and filepath
-friend=Blueprint("friend", __name__)
+friend=Blueprint("unfriend", __name__)
 
 
 #route to unfriend user
@@ -35,7 +35,7 @@ def unfriend_user():
         conn.commit()
         
         print(f"Successfully sent response    source:{__name__}") #log message
-        return jsonify({"message":f"You unfriended @{data['friend_username']}"}), 200 #frontend response
+        return jsonify({"message":f"unfriended successfully"}), 200 #frontend response
     
     except Exception as e:
         print(f"error: {str(e)}  source: {__name__}") #log message

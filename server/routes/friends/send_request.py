@@ -8,10 +8,10 @@ import json
 from modules.database_modules import database
 
 #initialzing route name and filepath
-friend=Blueprint("friend", __name__)
+friend=Blueprint("send", __name__)
 
 #route to send friend request
-@friend.route("/friend-request", methods=["POST"])
+@friend.route("/send-request", methods=["POST"])
 def send_friend_request():
     data=request.args
     conn = None

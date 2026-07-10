@@ -8,7 +8,7 @@ import json
 from modules.database_modules import database
 
 #initialzing route name and filepath
-friend=Blueprint("friend", __name__)
+friend=Blueprint("accept", __name__)
 
 
 #route to accept friend request
@@ -39,7 +39,7 @@ def accept_request():
         conn.commit()
         
         print(f"Successfully sent response    source:{__name__}") #log message
-        return jsonify({"message":f"You and @{data['from_username']} are now friends"}), 200 #frontend response
+        return jsonify({"message":f"request accepted"}), 200 #frontend response
     
     except Exception as e:
         print(f"error: {str(e)}  source: {__name__}") #log message
