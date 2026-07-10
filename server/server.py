@@ -22,6 +22,7 @@ from routes.friends import send_request
 from routes.friends import accept_request
 from routes.friends import block_user
 from routes.friends import unblock_user
+from routes.friends import unfriend_user
 from routes.friends import get_friends
 from routes.friends import get_relationship_status
 from routes.caching import user_presence_caching
@@ -80,6 +81,7 @@ app.register_blueprint(send_request.friend, url_prefix="/friends")
 app.register_blueprint(accept_request.friend, url_prefix="/friends")
 app.register_blueprint(block_user.friend, url_prefix="/friends")
 app.register_blueprint(unblock_user.friend, url_prefix="/friends")
+app.register_blueprint(unfriend_user.friend, url_prefix="/friends")
 app.register_blueprint(get_friends.friend, url_prefix="/friends")
 app.register_blueprint(get_relationship_status.friend, url_prefix="/friends")
 app.register_blueprint(user_presence_caching.cache, url_prefix="/cache")
