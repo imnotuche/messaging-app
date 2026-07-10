@@ -26,8 +26,8 @@ def cancel_request():
                 WHERE user_1 = ? AND user_2 = ? AND status = ?
             """,
             (
-                min(int(data["user_id"]), int(data["sent_to"])),
-                max(int(data["user_id"]), int(data["sent_to"])),
+                min(int(data["user_id"]), int(data["send_to"])),
+                max(int(data["user_id"]), int(data["send_to"])),
                 "pending"
             )
         )
