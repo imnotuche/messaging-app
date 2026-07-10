@@ -26,8 +26,8 @@ def send_friend_request():
             (
                 #we store user friendship ids smaller first, then larger
                 #so we search for records in that manner
-                min(data["user_id"], data["sent_to"]),
-                max(data["user_id"], data["sent_to"]),
+                min(data["user_id"], data["send_to"]),
+                max(data["user_id"], data["send_to"]),
                 "pending"
             )
         )
@@ -41,8 +41,8 @@ def send_friend_request():
             "INSERT INTO friendships (user_1, user_2, status, last_action, created_at, updated_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
                 (
                     #users inserted in ascending order
-                    min(data["user_id"], data["sent_to"]),
-                    max(data["user_id"], data["sent_to"]),
+                    min(data["user_id"], data["send_to"]),
+                    max(data["user_id"], data["send_to"]),
                     "pending",
                     int(data["user_id"])
                 )
