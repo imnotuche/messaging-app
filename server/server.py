@@ -20,7 +20,6 @@ from routes.auth import verify_email
 from routes.auth import logged_in
 from routes.friends import send_request
 from routes.friends import accept_request
-from routes.friends import reject_request
 from routes.friends import block_user
 from routes.friends import unblock_user
 from routes.friends import get_friends
