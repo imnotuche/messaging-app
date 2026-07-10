@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { getUser } from "../services/userService";
 import { useAuthStore } from "./authStore";
+import { useFriendsStore } from "./friendStore";
 import { 
     getFriendshipStatus,
     sendFriendRequest,
@@ -107,6 +108,27 @@ export const useCurrentProfileStore = create<ProfileState>((set, get) => ({
                     nextStatus = "none";
 
                 }
+
+            }
+
+            //keep friendsStore in sync with what just happened here, no extra network calls
+            if (action === "unfriend") {
+
+                useFriendsStore.getState().syncRemoveFriend(targetUser.user_id);
+
+            }
+
+            if (action === "accept_request") {
+
+                useFriendsStore.getState().syncAddFriend({
+                    id: targetUser.user_id,
+                    name: targetUser.name,
+                    email: targetUser.email,
+                    username: targetUser.username,
+                    profile: targetUser.profile,
+                    bio: targetUser.bio,
+                    last_seen: targetUser.lastSeen,
+                });
 
             }
 

@@ -9,6 +9,13 @@ export async function getFriends(){
 
 }
 
+//search within the current logged in user's friends by name/username
+export async function searchFriends(query : string) {
+    const response = await api.get(`/friends/search-friends?query=${query}`)
+    console.log(response);
+    return response;
+}
+
 //get the friendship status between the current logged in user and another user by their id
 export async function getFriendshipStatus(targetId : string){
 
