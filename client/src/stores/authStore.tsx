@@ -2,12 +2,14 @@ import { create } from "zustand";
 
 import { signUp, signIn, isLoggedIn, signOut } from "../services/authService";
 import { updateUserData } from "../services/userService";
+import { useCurrentProfileStore } from "./currentProfileStore";
+import { useSearchStore } from "./searchStore";
 
 type authStoreProps = {
     isAuthenticated: boolean;
     isLoading: boolean;
     user: {
-        id: string;
+        user_id: string;
         name: string;
         username: string;
         email: string;
@@ -30,7 +32,7 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
     isAuthenticated: false,
     isLoading: true,
     user: {
-        id: "",
+        user_id: "",
         name: "",
         username: "",
         email: "",
@@ -80,16 +82,22 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
         try{
 
             const response = await signOut();
+            const currentProfile = useCurrentProfileStore.getState();
+            const currentSearch = useSearchStore.getState();
+
+            currentProfile.clearProfileData();
+            currentSearch.clearSearch();
             set({
                 isAuthenticated: false,
                 user: {
-                    id: "",
+                    user_id: "",
                     name: "",
                     username: "",
                     email: "",
                     bio: "",
                 }
             })
+
             console.log(response);
 
         }catch(err: any) {
