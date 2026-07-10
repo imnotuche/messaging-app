@@ -81,6 +81,7 @@ def sign_up():
         response=make_response(jsonify({
             "message": "Sign up successful",
             "user" : {
+                "user_id": row["id"],
                 "name" : row["name"],
                 "email" : row["email"],
                 "username" : row["username"],

@@ -59,6 +59,7 @@ def log_in():
         response=make_response(jsonify({
             "message":"Log in successful",
             "user" : {
+                "user_id": user["id"],
                 "name" : user["name"],
                 "email" : user["email"],
                 "username" : user["username"],
