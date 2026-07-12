@@ -25,6 +25,14 @@ export async function getFriendshipStatus(targetId : string){
 
 }
 
+export async function getMutualFriendCount(targetId : string){
+
+    const response = await api.get(`/friends//get-mutual-friends-count?target_id=${targetId}`);
+    console.log(response);
+    return response;
+
+}
+
 //send friend request to a user
 export async function sendFriendRequest(userId : string, sendTo : string) {
 

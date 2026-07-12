@@ -4,6 +4,7 @@ import { useAuthStore } from "./authStore";
 import { useFriendsStore } from "./friendStore";
 import { 
     getFriendshipStatus,
+    getMutualFriendCount,
     sendFriendRequest,
     cancelFriendRequest,
     acceptFriendRequest,
@@ -149,17 +150,22 @@ export const useCurrentProfileStore = create<ProfileState>((set, get) => ({
         set({ isLoading: true });
 
         try {      
-            const [response, response2] = await Promise.all([
+            const [response, response2, response3] = await Promise.all([
 
                 //get user data
                 getUser(query),
 
                 //get friendship status
-                getFriendshipStatus(query)
+                getFriendshipStatus(query),
+
+                //get mutual friends count
+                getMutualFriendCount(query)
             ])
 
             console.log(response);
             console.log(response2);
+            console.log(response3);
+
 
             const auth = useAuthStore.getState();
             
@@ -183,7 +189,10 @@ export const useCurrentProfileStore = create<ProfileState>((set, get) => ({
             }
 
             //set user object and friendship status
-            set({user : response.data.payload, friendshipStatus: deducedStatus})
+            set({
+                user : { ...response.data.payload, mutualFriendsCount: response3.data.mutual_count }, 
+                friendshipStatus: deducedStatus,
+            })
         } catch (error) {
             console.error("Failed to fetch connection status in profileStore:", error);
             set({ user: null });
