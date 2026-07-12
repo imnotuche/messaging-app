@@ -83,7 +83,7 @@ export default function VerificationUI({title, instruction, emailTarget = "you@e
     return (
         <GridBg className="
             flex justify-center items-center
-            w-screen h-screen
+            w-screen h-dvh
             px-4
         ">
             

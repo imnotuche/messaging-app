@@ -19,7 +19,7 @@ function Auth() {
 
             <GridBg className="
                 flex justify-center items-center
-                w-screen h-screen
+                w-screen h-dvh
             ">
 
                 <Button className="

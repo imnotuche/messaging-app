@@ -19,12 +19,12 @@ function ProtectedLayout({isAuthenticated, navbar}:ProtectedRouteProps){
             <div className="
                 bg-[var(--panel-bg)] 
                 flex flex-col-reverse lg:flex-row
-                w-screen h-screen
+                w-screen h-dvh
             ">
                 
                 <SideBar/>
                 <main className="
-                    flex flex-1
+                    flex flex-1 min-h-0
                     h-[calc(100%-56px)] lg:h-full w-full
                 ">
                     <Outlet/>
@@ -38,7 +38,7 @@ function ProtectedLayout({isAuthenticated, navbar}:ProtectedRouteProps){
         return (
             
             <main className="
-                w-screen h-screen
+                w-screen h-dvh
             ">
                 <Outlet/>
             </main>

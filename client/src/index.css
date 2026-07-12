@@ -66,8 +66,9 @@
     @apply box-border;
 }
 body {
-    @apply h-screen flex justify-center items-center;
+    @apply h-dvh flex justify-center items-center;
     @apply font-sans;
+    min-height: 0;
 }
 @layer utilities {
     /* Dark Mode Scrollbars with transparent track background */
