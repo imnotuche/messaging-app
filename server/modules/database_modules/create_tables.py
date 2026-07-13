@@ -7,6 +7,20 @@ def create_tables():
     try:
         conn, cursor=database.connect()
         
+        #pending signups table (holds signups until OTP verification completes)
+        cursor.execute(
+            """
+                CREATE TABLE IF NOT EXISTS pending_signups(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT,
+                    email TEXT UNIQUE,
+                    username TEXT UNIQUE,
+                    password TEXT,
+                    last_sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """
+        )
+        
         #user table
         cursor.execute(
             '''

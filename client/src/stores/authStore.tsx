@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { signUp, signIn, isLoggedIn, signOut } from "../services/authService";
+import { signUp, signIn, isLoggedIn, signOut, verifySignupCode, resendSignupCode } from "../services/authService";
 import { updateUserData } from "../services/userService";
 import { useCurrentProfileStore } from "./currentProfileStore";
 import { useSearchStore } from "./searchStore";
@@ -19,6 +19,8 @@ type authStoreProps = {
     signIn: (user: object) => Promise<void>;
     signOut: () => Promise<void>;
     signUp: (user: object) => Promise<void>;
+    verifySignup: (code: string) => Promise<void>;
+    resendSignup: (email: string) => Promise<void>;
     update: (data: { 
         name?: string; 
         username?: string; 
@@ -106,20 +108,29 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
 
     },
 
+    //queues a pending signup, does not authenticate the user, verification does that
     signUp: async(user) => {
 
-        try{
+        const response = await signUp(user);
+        console.log(response);
 
-            const response = await signUp(user);
-            set({
-                isAuthenticated: response.status === 200 ? true : false,
-                user: response.data.user
-            });
-            console.log(response.data.user);
+    },
 
-        }catch(err:any) {
-            console.log(err);
-        } 
+    //verifies otp, promotes pending signup into a real account, backend logs the user in on success
+    verifySignup: async(code) => {
+
+        const response = await verifySignupCode(code);
+        set({
+            isAuthenticated: true,
+            user: response.data.user
+        });
+
+    },
+
+    //resends the otp for a pending signup, no auth state change
+    resendSignup: async(email) => {
+
+        await resendSignupCode(email);
 
     },
 

@@ -33,9 +33,14 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
     const handleFormSubmit = async (e: React.FormEvent) => {
 
         e.preventDefault(); //prevent default form action
-        await auth.signUp(user); //register user
-        navigate('/chat'); //navigate to chat route on success
-        
+
+        try {
+            await auth.signUp(user); //queue pending signup, sends otp
+            navigate('/verify-email', { state: { email } }); //go to verification step, carry email forward
+        } catch (err) {
+            console.error("Sign up failed:", err); //replace with real error UI if you have one
+        }
+
     }
 
     return (

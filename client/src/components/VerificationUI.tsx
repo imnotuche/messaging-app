@@ -8,9 +8,12 @@ type VerificationProps = {
     title: string;
     instruction: string;
     emailTarget?: string;
+    onVerify: (code: string) => Promise<void>;
+    onResend: () => Promise<void>;
+    onSuccess?: () => void;
 }
 
-export default function VerificationUI({title, instruction, emailTarget = "you@email.com"}: VerificationProps){
+export default function VerificationUI({title, instruction, emailTarget = "you@email.com", onVerify, onResend, onSuccess}: VerificationProps){
     const navigate = useNavigate();
 
     // State to hold the 6 individual characters
@@ -22,6 +25,10 @@ export default function VerificationUI({title, instruction, emailTarget = "you@e
     // Resend action state logic
     const [resendText, setResendText] = useState("RESEND CODE");
     const [isResendDisabled, setIsResendDisabled] = useState(false);
+
+    // Verify submission state
+    const [isVerifying, setIsVerifying] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     
     // Array of refs to control the focus of each Input component
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -38,6 +45,8 @@ export default function VerificationUI({title, instruction, emailTarget = "you@e
         const newCode = [...code];
         newCode[index] = val.slice(-1);
         setCode(newCode);
+
+        if (errorMessage) setErrorMessage(""); //clear stale error on new input
 
         if (val && index < 5) {
             inputRefs.current[index + 1]?.focus();
@@ -71,9 +80,45 @@ export default function VerificationUI({title, instruction, emailTarget = "you@e
         inputRefs.current[focusIndex]?.focus();
     };
 
-    const handleResendClick = () => {
-        setResendText("SENT!");
+    // Submits the joined code to whichever verification flow the parent supplied
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const joinedCode = code.join("");
+        if (joinedCode.length < 6) {
+            setErrorMessage("Enter all 6 digits");
+            return;
+        }
+
+        setIsVerifying(true);
+        setErrorMessage("");
+
+        try {
+            await onVerify(joinedCode);
+            onSuccess?.();
+        } catch (err: any) {
+            console.error("Verification failed:", err);
+            setErrorMessage(err?.response?.data?.message || "Incorrect code, try again");
+            setCode(Array(6).fill(""));
+            inputRefs.current[0]?.focus();
+        } finally {
+            setIsVerifying(false);
+        }
+    };
+
+    // Triggers a fresh code via whichever resend flow the parent supplied
+    const handleResendClick = async () => {
         setIsResendDisabled(true);
+        setErrorMessage("");
+
+        try {
+            await onResend();
+            setResendText("SENT!");
+        } catch (err: any) {
+            console.error("Resend failed:", err);
+            setErrorMessage(err?.response?.data?.message || "Couldn't resend code");
+        }
+
         setTimeout(() => {
             setResendText("RESEND CODE");
             setIsResendDisabled(false);
@@ -149,7 +194,7 @@ export default function VerificationUI({title, instruction, emailTarget = "you@e
                         <form className="
                             flex gap-2 mb-6 w-full
                             justify-center
-                        " onSubmit={(e) => e.preventDefault()}>
+                        " onSubmit={handleSubmit}>
 
                             {code.map((value, index) => (
                                 <Input
@@ -180,6 +225,11 @@ export default function VerificationUI({title, instruction, emailTarget = "you@e
 
                         </form>
 
+                        {/*inline error feedback*/}
+                        {errorMessage && (
+                            <p className="text-xs text-red-500 mb-4">{errorMessage}</p>
+                        )}
+
                         {/*resend functionality interaction trigger*/}
                         <p className="
                             text-xs text-[var(--muted)]
@@ -202,11 +252,13 @@ export default function VerificationUI({title, instruction, emailTarget = "you@e
 
                         <Button 
                             type="submit"
+                            disabled={isVerifying}
+                            onClick={handleSubmit}
                             className="
                                 mt-[30px] mb-[20px]
                             "
                         >
-                            VERIFY &amp; CONTINUE
+                            {isVerifying ? "VERIFYING..." : "VERIFY & CONTINUE"}
                         </Button>
                     </div>
                 </div>
