@@ -54,3 +54,27 @@ export async function getSignupStatus(){
     return response;
 
 }
+
+//sends a password reset code to the given identifier
+export async function sendResetCode(email_or_username: string){
+
+    const response = await api.post("/auth/reset/send-code", { email_or_username });
+    return response;
+
+}
+
+//verifies the password reset code
+export async function verifyResetCode(code: string){
+
+    const response = await api.post("/auth/reset/verify-code", { code });
+    return response;
+
+}
+
+//sets a new password after successful reset verification
+export async function setNewPassword(new_password: string){
+
+    const response = await api.post("/auth/reset/reset-password", { new_password });
+    return response;
+
+}

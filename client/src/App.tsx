@@ -10,6 +10,8 @@ import SettingsPage from "./components/SettingsUI/SettingsPage";
 import UserProfile from "./components/UserProfile";
 import AllFriends from "./components/AllFriends";
 import Search from "./components/Search";
+import ForgotPassword from "./components/ForgotPassword";
+
 function App() {
     const auth = useAuthStore()
     const settings = useSettingsStore()
@@ -37,6 +39,7 @@ function App() {
                 />
                 <Route path="/" element={<Navigate to="/auth" />} />
                 <Route path="verify-email" element={<SignupVerification />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
                 <Route element={<ProtectedLayout isAuthenticated = {auth.isAuthenticated} navbar = {true} />}>
                     <Route path="chat" element={<ChatUI/>} />
                     <Route path="settings" element={<SettingsPage/>} />

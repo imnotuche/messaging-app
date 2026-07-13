@@ -1,6 +1,17 @@
 import { create } from "zustand";
 
-import { signUp, signIn, isLoggedIn, signOut, verifySignupCode, resendSignupCode } from "../services/authService";
+import { 
+    signUp, 
+    signIn, 
+    isLoggedIn, 
+    signOut, 
+    verifySignupCode, 
+    resendSignupCode, 
+    sendResetCode, 
+    verifyResetCode, 
+    setNewPassword 
+} from "../services/authService";
+
 import { updateUserData } from "../services/userService";
 import { useCurrentProfileStore } from "./currentProfileStore";
 import { useSearchStore } from "./searchStore";
@@ -21,6 +32,9 @@ type authStoreProps = {
     signUp: (user: object) => Promise<void>;
     verifySignup: (code: string) => Promise<void>;
     resendSignup: (email: string) => Promise<void>;
+    sendReset: (identifier: string) => Promise<void>;
+    verifyReset: (code: string) => Promise<void>;
+    completeReset: (newPassword: string) => Promise<void>;
     update: (data: { 
         name?: string; 
         username?: string; 
@@ -131,6 +145,27 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
     resendSignup: async(email) => {
 
         await resendSignupCode(email);
+
+    },
+
+    //queues a password reset code, no auth state change
+    sendReset: async(identifier: string) => {
+
+        await sendResetCode(identifier);
+
+    },
+
+    //verifies the reset code, no auth state change, just confirms identity
+    verifyReset: async(code: string) => {
+
+        await verifyResetCode(code);
+
+    },
+
+    //sets the new password, completes the reset flow
+    completeReset: async(newPassword: string) => {
+
+        await setNewPassword(newPassword);
 
     },
 

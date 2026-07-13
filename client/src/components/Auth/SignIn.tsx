@@ -204,7 +204,7 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                         w-full flex justify-end
                         text-xs text-[var(--muted)] hover:text-[var(--accent)]
                         mt-2
-                    " to={""}>
+                    " to={"/forgot-password"}>
                         forgot password?
                     </Link>
                 

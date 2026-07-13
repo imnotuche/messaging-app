@@ -17,11 +17,13 @@ from modules import websocket
 from routes.auth import sign_up
 from routes.auth import log_in
 from routes.auth import log_out
-from routes.auth import verify_email
 from routes.auth import logged_in
 from routes.auth.signup_verification import resend_code
 from routes.auth.signup_verification import verify_code
 from routes.auth.signup_verification import verify_status
+from routes.auth.reset_password import verify_reset_code
+from routes.auth.reset_password import send_reset_code
+from routes.auth.reset_password import reset_password
 from routes.friends import send_request
 from routes.friends import accept_request
 from routes.friends import cancel_request
@@ -85,11 +87,13 @@ if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug:
 app.register_blueprint(sign_up.auth, url_prefix="/auth")
 app.register_blueprint(log_in.auth, url_prefix="/auth")
 app.register_blueprint(log_out.auth, url_prefix="/auth")
-app.register_blueprint(verify_email.verification, url_prefix="/auth")
 app.register_blueprint(logged_in.auth, url_prefix="/auth")
 app.register_blueprint(resend_code.signup_verification, url_prefix="/auth")
 app.register_blueprint(verify_code.signup_verification, url_prefix="/auth")
 app.register_blueprint(verify_status.signup_verification, url_prefix="/auth")
+app.register_blueprint(verify_reset_code.verification, url_prefix="/auth")
+app.register_blueprint(reset_password.verification, url_prefix="/auth")
+app.register_blueprint(send_reset_code.verification, url_prefix="/auth")
 app.register_blueprint(send_request.friend, url_prefix="/friends")
 app.register_blueprint(accept_request.friend, url_prefix="/friends")
 app.register_blueprint(cancel_request.friend, url_prefix="/friends")
