@@ -39,11 +39,11 @@
     --form-bg:          #211f1c;
     --input-bg:         #2b2824;
     --input-bg-f:       #3a352f;
-    --border:           #2b2824;
+    --border:           #332e28;
     --border-hi:        #7fa8a2; /* True Accent Change */
     --text:             #fdf9f3;
     --muted:            #a8a29a; 
-    --dim:              #38342e;
+    --dim:              #625d53;
     --accent:           #7fa8a2; /* Muted Teal Accent */
     --accent-lo:        #2e4643;
     --panel-bg:         #0c0b0a; /* Darker sidebar version (from #100f0d) */
