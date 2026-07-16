@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { getUser } from "../services/userService";
 import { useAuthStore } from "./authStore";
 import { useFriendsStore } from "./friendStore";
+import { subscribePresence, unsubscribePresence } from "../socket";
 import { 
     getFriendshipStatus,
     getMutualFriendCount,
@@ -22,15 +23,16 @@ const friendServicesMap = {
     unblock: unBlockUser,
 };
 
+//isOnline/lastSeen removed, presence is live state, it belongs in presenceStore not here,
+//keeping it here would go stale the moment the users real status changes
 type UserProfileData = {
     user_id: string;
     name: string;
     username: string;
     email: string;
     bio: string;
-    profile: string;
-    isOnline: boolean;
     lastSeen: string;
+    profile: string;
     mutualFriendsCount: number;
 };
 
@@ -50,6 +52,7 @@ type ProfileState = {
     user: UserProfileData | null;
     friendshipStatus: FriendshipStatus;
     isLoading: boolean;
+    subscribedUserId: string | null;
     executeAction: (action: ProfileAction) => Promise<void>; 
     getAllowedActions: () => ProfileAction[];
     setProfileData: (query: string) => Promise<void>;
@@ -61,6 +64,7 @@ export const useCurrentProfileStore = create<ProfileState>((set, get) => ({
     user: null,
     friendshipStatus: "none",
     isLoading: false,
+    subscribedUserId: null,
 
     executeAction: async (action: ProfileAction) => {
 
@@ -149,6 +153,13 @@ export const useCurrentProfileStore = create<ProfileState>((set, get) => ({
 
         set({ isLoading: true });
 
+        //drop the previous subscription before fetching the new profile,
+        //otherwise switching friends/1 -> friends/2 on the same mounted component leaks a room subscription
+        const previousSubscribedId = get().subscribedUserId;
+        if (previousSubscribedId) {
+            unsubscribePresence(previousSubscribedId);
+        }
+
         try {      
             const [response, response2, response3] = await Promise.all([
 
@@ -188,21 +199,34 @@ export const useCurrentProfileStore = create<ProfileState>((set, get) => ({
 
             }
 
+            const fetchedUserId = response.data.payload.user_id;
+
             //set user object and friendship status
             set({
                 user : { ...response.data.payload, mutualFriendsCount: response3.data.mutual_count }, 
                 friendshipStatus: deducedStatus,
+                subscribedUserId: fetchedUserId,
             })
+
+            //now subscribe to the new user's presence room, component reads live status from presenceStore, not from here
+            subscribePresence(fetchedUserId);
+
         } catch (error) {
             console.error("Failed to fetch connection status in profileStore:", error);
-            set({ user: null });
+            set({ user: null, subscribedUserId: null });
         } finally {
             set({ isLoading: false });
         }
     },
 
     clearProfileData: () => {
-        set({ user: null, friendshipStatus: "none" });
+
+        const subscribedId = get().subscribedUserId;
+        if (subscribedId) {
+            unsubscribePresence(subscribedId);
+        }
+
+        set({ user: null, friendshipStatus: "none", subscribedUserId: null });
     }
     
 }));

@@ -1,3 +1,7 @@
+#monkey patch must run before any other imports touch sockets/threading, eventlet requires this
+import eventlet
+eventlet.monkey_patch()
+
 #import modules
 import os
 from flask import Flask
@@ -10,7 +14,6 @@ import threading
 from modules.database_modules import create_tables
 from modules.async_workers import pending_signups_cleaner
 from modules.async_workers import email_worker
-from modules.caching import redis_notifications
 from modules import websocket
 
 #import routes
@@ -34,7 +37,6 @@ from routes.friends import get_friends
 from routes.friends import search_friends
 from routes.friends import get_relationship_status
 from routes.friends import get_mutual_friends
-from routes.caching import user_presence_caching
 from routes import user
 
 #load env variables
@@ -48,35 +50,17 @@ app = Flask(__name__)
 CORS(
     app, 
     supports_credentials=True, 
-    origins=["null", "http://127.0.0.1:5500", "http://localhost:5500", "http://localhost:5173", "*"]
+    origins=["null", "http://127.0.0.1:5500", "http://localhost:5500", "http://localhost:5173", "http://10.52.45.134:5173"]
 )
 
 #initialize socket
 socketio = websocket.init_socketio(app)
-
-#logs to confirm connection
-@socketio.on('connect')
-def handle_connect():
-    print('Client connected')
-
-#logs to confirm disconnect
-@socketio.on('disconnect')
-def handle_disconnect():
-    print('Client disconnected')
 
 if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug:
     pending_signups_cleaner.start_pending_signups_cleanup_scheduler()
 
 #create necessary tables
 create_tables.create_tables()
-
-#run thread to handle redis key expiry to track online users
-t = threading.Thread(
-    target=redis_notifications.listen_for_expired_keys,
-    args=(int(os.getenv("ONLINE_USER_DB")), socketio),
-    daemon=True 
-)
-t.start()
 
 if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug:
         worker_thread = threading.Thread(target=email_worker.process_email_queue, daemon=True)
@@ -104,7 +88,6 @@ app.register_blueprint(get_friends.friend, url_prefix="/friends")
 app.register_blueprint(search_friends.friend, url_prefix="/friends")
 app.register_blueprint(get_relationship_status.friend, url_prefix="/friends")
 app.register_blueprint(get_mutual_friends.friend, url_prefix="/friends")
-app.register_blueprint(user_presence_caching.cache, url_prefix="/cache")
 app.register_blueprint(user.user, url_prefix="/user")
 
 #start server

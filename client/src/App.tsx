@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuthStore } from "./stores/authStore";
 import { useSettingsStore } from "./stores/settingsStore";
+import { connectSocket, disconnectSocket } from "./socket";
 import ProtectedLayout from "./components/ProtectedLayout";
 import Auth from "./components/Auth/Auth";
 import ChatUI from "./components/ChatUI/ChatUI";
@@ -27,19 +28,33 @@ function App() {
         document.documentElement.classList.toggle("dark", settings.dark);
     }, [])
 
+    //connect once authenticated, disconnect on logout, not just on unmount
+    useEffect(() => {
+        if (auth.isAuthenticated) {
+            console.log("attempting socket connection now"); //temporary debug line
+            connectSocket();
+        } else {
+            disconnectSocket();
+        }
+    }, [auth.isAuthenticated]);
+
     if (auth.isLoading) return null;
+
     return (
     
         <>
         
             <Routes>
+
                 <Route
                     path="auth"
                     element={auth.isAuthenticated ? <Navigate to="/chat" /> : <Auth />}
                 />
+
                 <Route path="/" element={<Navigate to="/auth" />} />
                 <Route path="verify-email" element={<SignupVerification />} />
                 <Route path="forgot-password" element={<ForgotPassword />} />
+
                 <Route element={<ProtectedLayout isAuthenticated = {auth.isAuthenticated} navbar = {true} />}>
                     <Route path="chat" element={<ChatUI/>} />
                     <Route path="settings" element={<SettingsPage/>} />
@@ -50,6 +65,7 @@ function App() {
                     
                     <Route path="search" element={<Search/>} />
                 </Route>
+
             </Routes>
         
         </>

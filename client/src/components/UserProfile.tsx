@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import Avatar from "./UI/Avatar";
 import Button from "./UI/Button"; 
 import { useCurrentProfileStore } from "../stores/currentProfileStore";
+import { usePresenceStore } from "../stores/presenceStore";
 export default function UserProfile() {
     const { id } = useParams<{ id: string }>();
     
     const currentProfile =  useCurrentProfileStore();
+    const presenceStore = usePresenceStore();
     const [isFetchingUser, setIsFetchingUser] = useState(false);
     const [fetchError, setFetchError] = useState<string | null>(null);
     useEffect(() => {
@@ -58,6 +60,7 @@ export default function UserProfile() {
     const isBlockedByMe = currentProfile.friendshipStatus === "blocked_by_me";
     const isBlockedByThem = currentProfile.friendshipStatus === "blocked_by_them";
     const isFriend = currentProfile.friendshipStatus === "friends";
+    const presenceStatus = presenceStore.statusMap[id!];
     return (
         <>
             <div className="
@@ -139,9 +142,9 @@ export default function UserProfile() {
                                                 ">
                                                     <div className={`
                                                         w-[6px] h-[6px] rounded-full 
-                                                        ${currentProfile.user.isOnline ? 'bg-[var(--accent)]' : 'bg-gray-400 dark:bg-zinc-600'}
+                                                        ${presenceStatus === undefined ? 'bg-gray-300 dark:bg-zinc-700 animate-pulse' : presenceStatus === 'online' ? 'bg-[var(--accent)]' : 'bg-gray-400 dark:bg-zinc-600'}
                                                     `} />
-                                                    {currentProfile.user.isOnline ? 'online' : 'offline'}
+                                                    {presenceStatus === undefined ? 'checking status...' : presenceStatus === 'online' ? 'online' : 'offline'}
                                                 </div>
                                             )}
                                         </div>
