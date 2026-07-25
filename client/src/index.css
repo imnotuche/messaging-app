@@ -69,6 +69,7 @@ body {
     @apply h-dvh flex justify-center items-center;
     @apply font-sans;
     min-height: 0;
+    background-color: var(--bg);
 }
 @layer utilities {
     /* Dark Mode Scrollbars with transparent track background */
