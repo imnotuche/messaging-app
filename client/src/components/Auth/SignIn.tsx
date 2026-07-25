@@ -23,6 +23,8 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
 
+    const [isSubmitting, setIsSubmitting] = useState(false); //drives the submit button's loading state
+
     if (auth.isAuthenticated) {
         return <Navigate to="/chat" replace />;
     }
@@ -36,9 +38,16 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
     const handleFormSubmit = async (e: React.FormEvent) => {
 
         e.preventDefault(); //prevent default form action
-        await auth.signIn(user); //login user
-        navigate('/chat'); //navigate to chat route on success
-        
+
+        setIsSubmitting(true);
+
+        try {
+            await auth.signIn(user); //login user
+            navigate('/chat'); //navigate to chat route on success
+        } finally {
+            setIsSubmitting(false);
+        }
+
     };
 
     return (
@@ -123,7 +132,7 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                         onChange={(e) => setUserName(e.target.value)}
                         ></Input>
 
-                        {/*switch input button*/}
+                        {/*switch input button, clicks dont matter here so no preventMultipleClicks*/}
                         <Button type="button" className="
                             lg:pb-[0.4rem] pl-[0.1rem]
                             h-[100%] w-[50px] lg:w-[50px]
@@ -164,7 +173,7 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}></Input>
 
-                        {/*switch visibility button*/}
+                        {/*switch visibility button, clicks dont matter here so no preventMultipleClicks*/}
                         <Button type="button" className="
                             lg:pb-[0.4rem] pl-[0.1rem]
                             h-[100%] w-[50px] lg:w-[50px]
@@ -208,8 +217,8 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
                         forgot password?
                     </Link>
                 
-                    {/*sign in button*/}
-                    <Button type="submit" className="
+                    {/*sign in button, loading is controlled from here since submit buttons dont fire onClick*/}
+                    <Button type="submit" loading={isSubmitting} className="
                         mt-[30px] mb-[20px]
                     ">SIGN IN</Button>
 

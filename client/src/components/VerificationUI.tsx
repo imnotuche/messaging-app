@@ -252,15 +252,17 @@ export default function VerificationUI({title, instruction, emailTarget = "you@e
 
                         <Button 
                             type="submit"
-                            disabled={isVerifying}
+                            loading={isVerifying}
                             onClick={handleSubmit}
                             className="
                                 mt-[30px] mb-[20px]
                             "
                         >
-                            {isVerifying ? "VERIFYING..." : "VERIFY & CONTINUE"}
+                            VERIFY & CONTINUE
                         </Button>
+
                     </div>
+
                 </div>
 
                 {/*sidebar design banner info panel*/}

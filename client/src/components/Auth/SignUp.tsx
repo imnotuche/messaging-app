@@ -23,6 +23,8 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
 
+    const [isSubmitting, setIsSubmitting] = useState(false); //drives the submit button's loading state
+
     const user = {
         name,
         email,
@@ -34,11 +36,15 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
 
         e.preventDefault(); //prevent default form action
 
+        setIsSubmitting(true);
+
         try {
             await auth.signUp(user); //queue pending signup, sends otp
             navigate('/verify-email', { state: { email } }); //go to verification step, carry email forward
         } catch (err) {
             console.error("Sign up failed:", err); //replace with real error UI if you have one
+        } finally {
+            setIsSubmitting(false);
         }
 
     }
@@ -129,7 +135,7 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
                         onChange={(e) => setPassword(e.target.value)}
                         ></Input>
 
-                        {/*password visibility toggle button*/}
+                        {/*password visibility toggle button, clicks dont matter here so no preventMultipleClicks*/}
                         <Button type="button" className="
                             lg:pb-[0.4rem] pl-[0.1rem]
                             h-[100%] w-[50px] lg:w-[50px]
@@ -165,8 +171,8 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
 
                     </div>
 
-                    {/*sign in button*/}
-                    <Button type="submit" className="
+                    {/*sign in button, loading is controlled from here since submit buttons dont fire onClick*/}
+                    <Button type="submit" loading={isSubmitting} className="
                         mt-[30px] mb-[20px]
                     "
                     >SIGN UP</Button>
