@@ -4,6 +4,7 @@ import Avatar from "./UI/Avatar";
 import Button from "./UI/Button"; 
 import { useCurrentProfileStore } from "../stores/currentProfileStore";
 import { usePresenceStore } from "../stores/presenceStore";
+import { useToastStore } from "../stores/toastStore";
 import { LoadingPageAnimation } from "./UI/LoadingElement";
 import { useDelayedLoading } from "../delayedLoading";
 
@@ -169,22 +170,29 @@ export default function UserProfile() {
                                     ">
                                         {!isBlockedByMe && !isBlockedByThem && (
                                             <Button
+                                                preventMultipleClicks
                                                 className={`
                                                     font-sans font-medium tracking-[0.01em] gap-1.5 
                                                     cursor-pointer transition-all active:scale-[0.97] 
                                                     w-full sm:w-[130px] lg:w-[140px] h-9 lg:h-10 text-xs lg:text-sm rounded-[8px] 
                                                     ${currentProfile.friendshipStatus !== 'none' ? 'border border-[var(--border)] bg-transparent text-[var(--text)] hover:bg-neutral-100 dark:hover:bg-zinc-800' : ''}
                                                 `}
-                                                onClick={() => {
-                                                    if (currentProfile.friendshipStatus === "none") {
-                                    
-                                                        currentProfile.executeAction("send_request");
-                                                    } else if (currentProfile.friendshipStatus === "pending_outgoing") {
-                                                        currentProfile.executeAction("cancel_request");
-                                                    } else if (currentProfile.friendshipStatus === "pending_incoming") {
-                                                        currentProfile.executeAction("accept_request");
-                                                    } else if (currentProfile.friendshipStatus === "friends") {
-                                                        currentProfile.executeAction("unfriend");
+                                                onClick={async () => {
+                                                    try {
+                                                        if (currentProfile.friendshipStatus === "none") {
+                                                            await currentProfile.executeAction("send_request");
+                                                        } else if (currentProfile.friendshipStatus === "pending_outgoing") {
+                                                            await currentProfile.executeAction("cancel_request");
+                                                        } else if (currentProfile.friendshipStatus === "pending_incoming") {
+                                                            await currentProfile.executeAction("accept_request");
+                                                        } else if (currentProfile.friendshipStatus === "friends") {
+                                                            await currentProfile.executeAction("unfriend");
+                                                        }
+                                                    } catch (err: any) {
+                                                        useToastStore.getState().addToast({
+                                                            variant: "error",
+                                                            message: err?.response?.data?.message || "Couldn't complete that action, try again",
+                                                        });
                                                     }
                                                 }}
                                             >
@@ -233,25 +241,31 @@ export default function UserProfile() {
                                             </Button>
                                         )}
                                         {!isBlockedByThem && (
-                                            <Button className={`
-                                                font-sans font-medium tracking-[0.01em] 
-                                                gap-1.5 cursor-pointer 
-                                                transition-all active:scale-[0.97] 
-                                                w-full sm:w-[130px] lg:w-[140px] 
-                                                h-9 lg:h-10 
-                                                text-xs lg:text-sm rounded-[8px]
-                                                ${isBlockedByMe ? 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20' : 'border border-[var(--border)] bg-transparent text-[var(--text)] hover:bg-neutral-100 dark:hover:bg-zinc-800'}
-                                            `}
-                                            
-                                            onClick={() => {
-                                                if (isBlockedByMe) {
-        
-                                                    currentProfile.executeAction("unblock");
-                                                } else {
-                                                    
-                                                    currentProfile.executeAction("block");
-                                                }
-                                            }}
+                                            <Button
+                                                preventMultipleClicks
+                                                className={`
+                                                    font-sans font-medium tracking-[0.01em] 
+                                                    gap-1.5 cursor-pointer 
+                                                    transition-all active:scale-[0.97] 
+                                                    w-full sm:w-[130px] lg:w-[140px] 
+                                                    h-9 lg:h-10 
+                                                    text-xs lg:text-sm rounded-[8px]
+                                                    ${isBlockedByMe ? 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20' : 'border border-[var(--border)] bg-transparent text-[var(--text)] hover:bg-neutral-100 dark:hover:bg-zinc-800'}
+                                                `}
+                                                onClick={async () => {
+                                                    try {
+                                                        if (isBlockedByMe) {
+                                                            await currentProfile.executeAction("unblock");
+                                                        } else {
+                                                            await currentProfile.executeAction("block");
+                                                        }
+                                                    } catch (err: any) {
+                                                        useToastStore.getState().addToast({
+                                                            variant: "error",
+                                                            message: err?.response?.data?.message || "Couldn't complete that action, try again",
+                                                        });
+                                                    }
+                                                }}
                                             >
                                                 <svg className="size-3.5 lg:size-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />

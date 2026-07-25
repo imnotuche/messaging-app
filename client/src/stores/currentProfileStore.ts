@@ -71,10 +71,10 @@ export const useCurrentProfileStore = create<ProfileState>((set, get) => ({
         //get allowed action for current relationship state
         const allowed = get().getAllowedActions();
         
-        // Security guard: Reject execution if the client tries to fire an illegal action
+        // security guard: reject execution if the client tries to fire an illegal action,
+        // throws instead of silently returning so a stale-state click doesn't look like success
         if (!allowed.includes(action)) {
-            console.warn(`Action '${action}' is strictly forbidden while state is '${get().friendshipStatus}'`);
-            return;
+            throw new Error(`Action '${action}' is not valid while state is '${get().friendshipStatus}'`);
         }
 
         const auth = useAuthStore.getState();
@@ -82,66 +82,61 @@ export const useCurrentProfileStore = create<ProfileState>((set, get) => ({
         if (!targetUser) return;
         const serviceRunner = friendServicesMap[action];
 
-        try {
+        const response = await serviceRunner(auth.user.user_id, targetUser.user_id);
 
-            const response = await serviceRunner(auth.user.user_id, targetUser.user_id);
+        // optimistically update the local friendship state to match the result of the action
+        let nextStatus: FriendshipStatus = "none";
+        if (action === "send_request") nextStatus = "pending_outgoing";
+        if (action === "accept_request") nextStatus = "friends";
+        if (action === "cancel_request") nextStatus = "none";
+        if (action === "unfriend") nextStatus = "none";
+        if (action === "block") nextStatus = "blocked_by_me";
 
-            // Optimistically update the local friendship state to match the result of the action
-            let nextStatus: FriendshipStatus = "none";
-            if (action === "send_request") nextStatus = "pending_outgoing";
-            if (action === "accept_request") nextStatus = "friends";
-            if (action === "cancel_request") nextStatus = "none";
-            if (action === "unfriend") nextStatus = "none";
-            if (action === "block") nextStatus = "blocked_by_me";
+        //unblock can restore to any prior relationship, so deduce it from what the backend returned
+        if (action === "unblock") {
 
-            //unblock can restore to any prior relationship, so deduce it from what the backend returned
-            if (action === "unblock") {
+            const restoredStatus = response.data.status;
+            const restoredLastAction = response.data.last_action;
 
-                const restoredStatus = response.data.status;
-                const restoredLastAction = response.data.last_action;
+            if (restoredStatus === "friends") {
 
-                if (restoredStatus === "friends") {
+                nextStatus = "friends";
 
-                    nextStatus = "friends";
+            } else if (restoredStatus === "pending") {
 
-                } else if (restoredStatus === "pending") {
+                nextStatus = restoredLastAction === auth.user.user_id ? "pending_outgoing" : "pending_incoming";
 
-                    nextStatus = restoredLastAction === auth.user.user_id ? "pending_outgoing" : "pending_incoming";
+            } else {
 
-                } else {
-
-                    nextStatus = "none";
-
-                }
+                nextStatus = "none";
 
             }
 
-            //keep friendsStore in sync with what just happened here, no extra network calls
-            if (action === "unfriend") {
-
-                useFriendsStore.getState().syncRemoveFriend(targetUser.user_id);
-
-            }
-
-            if (action === "accept_request") {
-
-                useFriendsStore.getState().syncAddFriend({
-                    id: targetUser.user_id,
-                    name: targetUser.name,
-                    email: targetUser.email,
-                    username: targetUser.username,
-                    profile: targetUser.profile,
-                    bio: targetUser.bio,
-                    last_seen: targetUser.lastSeen,
-                });
-
-            }
-
-            set({ friendshipStatus: nextStatus });
-
-        } catch (error) {
-            console.error(`Failed executing interaction sequence: ${action}`, error);
         }
+
+        //keep friendsStore in sync with what just happened here, no extra network calls
+        if (action === "unfriend") {
+
+            useFriendsStore.getState().syncRemoveFriend(targetUser.user_id);
+
+        }
+
+        if (action === "accept_request") {
+
+            useFriendsStore.getState().syncAddFriend({
+                id: targetUser.user_id,
+                name: targetUser.name,
+                email: targetUser.email,
+                username: targetUser.username,
+                profile: targetUser.profile,
+                bio: targetUser.bio,
+                last_seen: targetUser.lastSeen,
+            });
+
+        }
+
+        set({ friendshipStatus: nextStatus });
+
     },
 
     getAllowedActions: () => {

@@ -1,3 +1,4 @@
+{/*imports*/}
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuthStore } from "./stores/authStore";
@@ -14,6 +15,7 @@ import Search from "./components/Search";
 import ForgotPassword from "./components/ForgotPassword";
 import {LoadingPageAnimation} from "./components/UI/LoadingElement";
 import { useDelayedLoading } from "./delayedLoading";
+import ToastContainer from "./components/UI/ToastContainer";
 
 function App() {
     const auth = useAuthStore()
@@ -48,6 +50,8 @@ function App() {
     return (
     
         <>
+
+            <ToastContainer/>
         
             <Routes>
 

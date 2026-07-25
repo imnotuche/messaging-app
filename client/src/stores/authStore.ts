@@ -78,8 +78,6 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
 
     signIn: async(user) => {
 
-        try{   
-
             const response = await signIn(user);
             console.log(response);
             set({
@@ -87,17 +85,17 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
                 user: response.data.user
             });
 
-        }catch(err: any) {
-            console.log(err);
-        }      
-
     },
 
     signOut: async() => {
-        
-        try{
+
+        try {
 
             const response = await signOut();
+            console.log(response);
+
+        } finally {
+
             const currentProfile = useCurrentProfileStore.getState();
             const currentSearch = useSearchStore.getState();
 
@@ -112,13 +110,9 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
                     email: "",
                     bio: "",
                 }
-            })
+            });
 
-            console.log(response);
-
-        }catch(err: any) {
-            console.log(err);
-        }  
+        }
 
     },
 

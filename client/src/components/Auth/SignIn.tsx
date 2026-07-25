@@ -1,10 +1,9 @@
 import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
-
 import Input from "../UI/Input";
 import Button from "../UI/Button";
-
 import { useState } from "react";
+import { useToastStore } from "../../stores/toastStore";
 
 type SignInProps = {
     isLogin: boolean;
@@ -44,6 +43,11 @@ function SignIn({ isLogin, setIsLogin } : SignInProps) {
         try {
             await auth.signIn(user); //login user
             navigate('/chat'); //navigate to chat route on success
+        } catch (err: any) {
+            useToastStore.getState().addToast({
+                variant: "error",
+                message: err?.response?.data?.message || "Couldn't sign in, check your details and try again",
+            });
         } finally {
             setIsSubmitting(false);
         }

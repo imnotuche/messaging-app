@@ -1,10 +1,9 @@
 import { useNavigate} from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
-
 import Input from "../UI/Input";
 import Button from "../UI/Button";
-
 import { useState } from "react";
+import { useToastStore } from "../../stores/toastStore";
 
 type SignUpProps = {
     isLogin: boolean;
@@ -41,8 +40,11 @@ function SignUp({ isLogin, setIsLogin } : SignUpProps){
         try {
             await auth.signUp(user); //queue pending signup, sends otp
             navigate('/verify-email', { state: { email } }); //go to verification step, carry email forward
-        } catch (err) {
-            console.error("Sign up failed:", err); //replace with real error UI if you have one
+        } catch (err: any) {
+            useToastStore.getState().addToast({
+            variant: "error",
+            message: err?.response?.data?.message || "Sign up failed, try again",
+        });
         } finally {
             setIsSubmitting(false);
         }
