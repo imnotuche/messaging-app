@@ -10,6 +10,11 @@ from flask_socketio import SocketIO, emit, disconnect
 from dotenv import load_dotenv
 import threading
 
+#load env variables
+load_dotenv()
+production=os.getenv("PY_ENV")=="production"
+port=int(os.getenv("PORT"))
+
 #import user created files
 from modules.database_modules import create_tables
 from modules.async_workers import pending_signups_cleaner
@@ -38,11 +43,6 @@ from routes.friends import search_friends
 from routes.friends import get_relationship_status
 from routes.friends import get_mutual_friends
 from routes import user
-
-#load env variables
-load_dotenv()
-production=os.getenv("PY_ENV")=="production"
-port=int(os.getenv("PORT"))
 
 app = Flask(__name__)
 
