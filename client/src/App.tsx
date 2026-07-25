@@ -13,6 +13,7 @@ import AllFriends from "./components/AllFriends";
 import Search from "./components/Search";
 import ForgotPassword from "./components/ForgotPassword";
 import {LoadingPageAnimation} from "./components/UI/LoadingElement";
+import { useDelayedLoading } from "./delayedLoading";
 
 function App() {
     const auth = useAuthStore()
@@ -39,7 +40,10 @@ function App() {
         }
     }, [auth.isAuthenticated]);
 
-    if (auth.isLoading) return <LoadingPageAnimation ballColor="var(--accent)" className="min-h-screen" />;
+    //logic for loading animation visibility
+    const showAuthLoading = useDelayedLoading(auth.isLoading);
+    if (showAuthLoading) return <LoadingPageAnimation ballColor="var(--accent)" className="min-h-screen" />;
+    if (auth.isLoading) return null;
 
     return (
     
@@ -67,7 +71,8 @@ function App() {
                     <Route path="search" element={<Search/>} />
                 </Route>
 
-                <Route path="loading" element={<LoadingPageAnimation/>} />
+                {/* This is to test loading page animation if we ever want to change its parameters */}
+                {/* <Route path="loading" element={<LoadingPageAnimation/>} /> */}
 
             </Routes>
         

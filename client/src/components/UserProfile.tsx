@@ -5,17 +5,19 @@ import Button from "./UI/Button";
 import { useCurrentProfileStore } from "../stores/currentProfileStore";
 import { usePresenceStore } from "../stores/presenceStore";
 import { LoadingPageAnimation } from "./UI/LoadingElement";
+import { useDelayedLoading } from "../delayedLoading";
 
 
 export default function UserProfile() {
     const { id } = useParams<{ id: string }>();
-    
     const currentProfile =  useCurrentProfileStore();
     const presenceStore = usePresenceStore();
     const [isFetchingUser, setIsFetchingUser] = useState(false);
     const [fetchError, setFetchError] = useState<string | null>(null);
+
     useEffect(() => {
         if (!id) return;
+
         const fetchUserProfileContext = async () => {
             setIsFetchingUser(true);
             setFetchError(null);
@@ -29,24 +31,31 @@ export default function UserProfile() {
                 setIsFetchingUser(false);
             }
         };
+
         fetchUserProfileContext();
+
         return () => {
             currentProfile.clearProfileData();
         };
     }, [id, currentProfile.setProfileData, currentProfile.clearProfileData]);
 
-    if (isFetchingUser) {
+    const showProfileLoading = useDelayedLoading(isFetchingUser);
+
+    if (showProfileLoading) {
         return (
             <div className="
-            bg-[var(--bg)]
-            flex flex-1 
-            items-center justify-center 
-            m-3 mb-0 lg:mb-3 rounded-xl
-        ">
-            <LoadingPageAnimation ballColor="var(--accent)" minSize={40} maxSize={64} />
-        </div>
+                bg-[var(--bg)]
+                flex flex-1 
+                items-center justify-center 
+                m-3 mb-0 lg:mb-3 rounded-xl
+            ">
+                <LoadingPageAnimation ballColor="var(--accent)" minSize={40} maxSize={64} />
+            </div>
         );
     }
+
+    if (isFetchingUser) return null;
+
     if (fetchError || !id || !currentProfile.user) {
         return (
             <div className="

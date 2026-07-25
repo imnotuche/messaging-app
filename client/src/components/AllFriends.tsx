@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Avatar from "./UI/Avatar";
 import { LoadingPageAnimation } from "./UI/LoadingElement";
+import { useDelayedLoading } from "../delayedLoading";
 import { useFriendsStore } from "../stores/friendStore";
 
 function AllFriends(){
@@ -18,6 +19,8 @@ function AllFriends(){
     } = useFriendsStore();
 
     const navigate = useNavigate();
+
+    const showFriendsLoading = useDelayedLoading(isLoading);
 
     useEffect(() => {
         fetchFriends();
@@ -102,13 +105,13 @@ function AllFriends(){
                         w-full
                     ">
 
-                        {isLoading ? (
+                        {showFriendsLoading ? (
 
                             <div className="flex items-center justify-center py-10">
                                 <LoadingPageAnimation ballColor="var(--accent)" minSize={36} maxSize={48} />
                             </div>
 
-                        ) : (
+                        ) : isLoading ? null : (
 
                             <>
 
