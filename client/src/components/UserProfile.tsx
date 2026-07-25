@@ -4,6 +4,9 @@ import Avatar from "./UI/Avatar";
 import Button from "./UI/Button"; 
 import { useCurrentProfileStore } from "../stores/currentProfileStore";
 import { usePresenceStore } from "../stores/presenceStore";
+import { LoadingPageAnimation } from "./UI/LoadingElement";
+
+
 export default function UserProfile() {
     const { id } = useParams<{ id: string }>();
     
@@ -31,17 +34,17 @@ export default function UserProfile() {
             currentProfile.clearProfileData();
         };
     }, [id, currentProfile.setProfileData, currentProfile.clearProfileData]);
+
     if (isFetchingUser) {
         return (
             <div className="
-                bg-[var(--bg)]
-                flex flex-1 
-                items-center justify-center 
-                text-sm text-[var(--muted)] 
-                m-3 mb-0 lg:mb-3 rounded-xl
-            ">
-                Loading profile data...
-            </div>
+            bg-[var(--bg)]
+            flex flex-1 
+            items-center justify-center 
+            m-3 mb-0 lg:mb-3 rounded-xl
+        ">
+            <LoadingPageAnimation ballColor="var(--accent)" minSize={40} maxSize={64} />
+        </div>
         );
     }
     if (fetchError || !id || !currentProfile.user) {

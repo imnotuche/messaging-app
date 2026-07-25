@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Avatar from "./UI/Avatar";
+import { LoadingPageAnimation } from "./UI/LoadingElement";
 import { useFriendsStore } from "../stores/friendStore";
 
 function AllFriends(){
@@ -10,6 +11,7 @@ function AllFriends(){
         searchQuery, 
         searchResults, 
         isSearching, 
+        isLoading,
         fetchFriends, 
         setSearchQuery, 
         removeFriend 
@@ -100,100 +102,114 @@ function AllFriends(){
                         w-full
                     ">
 
-                        {isSearching && (
-                            <p className="text-xs text-[var(--muted)] px-3 py-2">Searching...</p>
-                        )}
+                        {isLoading ? (
 
-                        {!isSearching && displayedList.length === 0 && (
-                            <p className="text-xs text-[var(--muted)] px-3 py-2">
-                                {searchQuery.trim() ? "No friends match your search." : "You have no friends yet."}
-                            </p>
-                        )}
+                            <div className="flex items-center justify-center py-10">
+                                <LoadingPageAnimation ballColor="var(--accent)" minSize={36} maxSize={48} />
+                            </div>
 
-                        {displayedList.map((friendItem) => (
+                        ) : (
 
-                            <div key={friendItem.id} className={`
-                                flex items-center justify-between
-                                w-[100%] h-16
-                                md:mb-0 lg:mb-3
-                                px-3 md:px-4 lg:px-5
-                                rounded-xl
-                                hover:bg-[var(--form-bg)]
-                                transition-colors duration-200
-                                group relative
-                            `}>
+                            <>
 
-                                <div 
-                                    onClick={() => {
-                                        // Direct layout route push triggers automatic component useEffect mounting above
-                                        navigate(`/friends/${friendItem.id}`);
-                                    }}
-                                    className="
-                                    flex items-center 
-                                    flex-1 min-w-0
-                                    cursor-pointer
-                                ">
+                                {isSearching && (
+                                    <p className="text-xs text-[var(--muted)] px-3 py-2">Searching...</p>
+                                )}
 
-                                    <Avatar imageSrc={friendItem.profile} imageClassName="
-                                        h-9 md:h-10 lg:h-12
-                                    " />
+                                {!isSearching && displayedList.length === 0 && (
+                                    <p className="text-xs text-[var(--muted)] px-3 py-2">
+                                        {searchQuery.trim() ? "No friends match your search." : "You have no friends yet."}
+                                    </p>
+                                )}
 
-                                    <div className={`
-                                        block
-                                        opacity-100
-                                        translate-x-0
-                                        w-[70%] ml-3
-                                        min-w-0
+                                {displayedList.map((friendItem) => (
+
+                                    <div key={friendItem.id} className={`
+                                        flex items-center justify-between
+                                        w-[100%] h-16
+                                        md:mb-0 lg:mb-3
+                                        px-3 md:px-4 lg:px-5
+                                        rounded-xl
+                                        hover:bg-[var(--form-bg)]
+                                        transition-colors duration-200
+                                        group relative
                                     `}>
 
-                                        <p className="
-                                            text-sm md:text-base 
-                                            font-semibold text-[var(--text)]
-                                            truncate
-                                            leading-5
-                                            mb-[2px]
-                                        ">{friendItem.name}</p>
-
-                                        <p className="
-                                            text-xs lg:text-sm 
-                                            font-medium text-[var(--muted)]
-                                            truncate
-                                            leading-5
+                                        <div 
+                                            onClick={() => {
+                                                // Direct layout route push triggers automatic component useEffect mounting above
+                                                navigate(`/friends/${friendItem.id}`);
+                                            }}
+                                            className="
+                                            flex items-center 
+                                            flex-1 min-w-0
+                                            cursor-pointer
                                         ">
-                                            @{friendItem.username}
-                                        </p>
+
+                                            <Avatar imageSrc={friendItem.profile} imageClassName="
+                                                h-9 md:h-10 lg:h-12
+                                            " />
+
+                                            <div className={`
+                                                block
+                                                opacity-100
+                                                translate-x-0
+                                                w-[70%] ml-3
+                                                min-w-0
+                                            `}>
+
+                                                <p className="
+                                                    text-sm md:text-base 
+                                                    font-semibold text-[var(--text)]
+                                                    truncate
+                                                    leading-5
+                                                    mb-[2px]
+                                                ">{friendItem.name}</p>
+
+                                                <p className="
+                                                    text-xs lg:text-sm 
+                                                    font-medium text-[var(--muted)]
+                                                    truncate
+                                                    leading-5
+                                                ">
+                                                    @{friendItem.username}
+                                                </p>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div className={`
+                                            flex
+                                            flex-row
+                                            justify-center items-center 
+                                            opacity-100
+                                            translate-x-0
+                                            ml-4
+                                        `}>
+                                            
+                                            <button 
+                                                onClick={() => removeFriend(friendItem.id)}
+                                                className="
+                                                opacity-0 group-hover:opacity-100
+                                                transition-all duration-200
+                                                p-1.5 rounded-lg
+                                                text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20
+                                            " title="Remove Friend">
+                                                <svg className="size-4 md:size-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M22 10.5h-6m-2.25-1.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM1.5 19.5a8.25 8.25 0 0 1 15 0v.75H1.5v-.75Z" />
+                                                </svg>
+                                            </button>
+
+                                        </div>
 
                                     </div>
 
-                                </div>
+                                ))}
 
-                                <div className={`
-                                    flex
-                                    flex-row
-                                    justify-center items-center 
-                                    opacity-100
-                                    translate-x-0
-                                    ml-4
-                                `}>
-                                    
-                                    <button 
-                                        onClick={() => removeFriend(friendItem.id)}
-                                        className="
-                                        opacity-0 group-hover:opacity-100
-                                        transition-all duration-200
-                                        p-1.5 rounded-lg
-                                        text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20
-                                    " title="Remove Friend">
-                                        <svg className="size-4 md:size-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M22 10.5h-6m-2.25-1.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM1.5 19.5a8.25 8.25 0 0 1 15 0v.75H1.5v-.75Z" />
-                                        </svg>
-                                    </button>
+                            </>
 
-                                </div>
-
-                            </div>
-
-                        ))}
+                        )}
 
                     </div>
 

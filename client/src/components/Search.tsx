@@ -12,15 +12,13 @@ function Search() {
     useEffect(() => {
         if (!searchStore.searchUserQuery.trim()) {
             searchStore.clearSearch();
+            setIsLoading(false);
             return;
         }
 
-        if (searchStore.searchUserResults.length === 0) {
-            setIsLoading(true);
-        }
+        setIsLoading(true);
 
         const delayDebounceFn = setTimeout(async () => {
-            setIsLoading(true);
             try {
                 const queryString = `query=${encodeURIComponent(searchStore.searchUserQuery)}`;
                 await searchStore.searchUser(queryString);

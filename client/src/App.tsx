@@ -12,6 +12,7 @@ import UserProfile from "./components/UserProfile";
 import AllFriends from "./components/AllFriends";
 import Search from "./components/Search";
 import ForgotPassword from "./components/ForgotPassword";
+import {LoadingPageAnimation} from "./components/UI/LoadingElement";
 
 function App() {
     const auth = useAuthStore()
@@ -38,7 +39,7 @@ function App() {
         }
     }, [auth.isAuthenticated]);
 
-    if (auth.isLoading) return null;
+    if (auth.isLoading) return <LoadingPageAnimation ballColor="var(--accent)" className="min-h-screen" />;
 
     return (
     
@@ -65,6 +66,8 @@ function App() {
                     
                     <Route path="search" element={<Search/>} />
                 </Route>
+
+                <Route path="loading" element={<LoadingPageAnimation/>} />
 
             </Routes>
         
