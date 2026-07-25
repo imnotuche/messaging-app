@@ -14,7 +14,11 @@ secret=os.getenv("JWT_SECRET")
 
 #create socketio object, explicit origins, not wildcard, because we need credentials
 socketio = SocketIO(
-    cors_allowed_origins=["http://127.0.0.1:5500", "http://localhost:5500", "http://localhost:5173", "http://10.52.45.134:5173" ],
+    cors_allowed_origins=[
+        "http://127.0.0.1:5500", "http://localhost:5500", 
+        "http://localhost:5173", "http://10.52.45.134:5173" ,
+        "http://localhost:4173"
+    ],
     cors_credentials=True,
     logger=True,
     engineio_logger=True
