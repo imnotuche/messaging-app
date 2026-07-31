@@ -59,6 +59,9 @@ def handle_connect():
         disconnect()
         return False
 
+    #every socket a user opens joins their own notification room automatically, no explicit subscribe needed
+    join_room(f"notifications:{user_id}")
+
     #only broadcast if this is the first active tab, not every duplicate connection
     if not was_online:
         socketio.emit("presence_change", {"user_id": user_id, "status": "online"}, room=f"presence:{user_id}")
@@ -109,3 +112,7 @@ def handle_unsubscribe(data):
         return
 
     leave_room(f"presence:{target_id}")
+
+#exported for route files to call after creating a notification
+def emit_notification(user_id, notification):
+    socketio.emit("new_notification", notification, room=f"notifications:{user_id}")

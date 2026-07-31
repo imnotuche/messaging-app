@@ -1,6 +1,7 @@
 //import modules
 import { io, Socket } from "socket.io-client";
 import { usePresenceStore } from "./stores/presenceStore";
+import { useNotificationStore } from "./stores/notificationStore";
 
 //singleton instance, created once, reused everywhere
 let socket: Socket | null = null;
@@ -22,6 +23,11 @@ export function connectSocket() {
     //single listener for the whole app, writes straight into the store
     socket.on("presence_change", (data: { user_id: string; status: "online" | "offline" }) => {
         usePresenceStore.getState().setStatus(data.user_id, data.status);
+    });
+
+    //fresh notification pushed from the backend, store handles the prepend + unread bump
+    socket.on("new_notification", (data) => {
+        useNotificationStore.getState().addNotification(data);
     });
 
     //keep the redis ttl alive, matches the 10s interval from your plan

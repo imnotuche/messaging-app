@@ -1,5 +1,6 @@
 import { Outlet, Navigate } from "react-router-dom"
 import SideBar from "./SideBar"
+import NotificationBell from "./NotificationBell"
 
 type ProtectedRouteProps = {
     isAuthenticated: boolean;
@@ -18,6 +19,7 @@ function ProtectedLayout({isAuthenticated, navbar}:ProtectedRouteProps){
 
             <div className="
                 bg-[var(--panel-bg)] 
+                relative
                 flex flex-col-reverse lg:flex-row
                 w-screen h-dvh
             ">
@@ -29,6 +31,8 @@ function ProtectedLayout({isAuthenticated, navbar}:ProtectedRouteProps){
                 ">
                     <Outlet/>
                 </main>
+
+                <NotificationBell />
 
             </div>
 

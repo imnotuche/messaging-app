@@ -17,7 +17,7 @@ function AllChats(){
                 right-3 md:right-0 bottom-1/2 md:bottom-0
                 translate-y-1/2 md:translate-y-0 md:translate-x-0
                 flex flex-col items-center
-                h-[90%] md:h-full w-[80%] lg:w-[30%]
+                h-[85%] md:h-full w-[80%] lg:w-[30%]
                 rounded-xl border border-[var(--border)] md:border-none
                 md:ml-3
                 transition-all duration-300 ease

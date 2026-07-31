@@ -71,6 +71,30 @@ def create_tables():
             """
         )
         
+        #notifications table
+        cursor.execute(
+            """
+                CREATE TABLE IF NOT EXISTS notifications(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    recipient_id INTEGER NOT NULL,
+                    actor_id INTEGER NOT NULL,
+                    type TEXT NOT NULL,
+                    payload TEXT,
+                    is_read INTEGER NOT NULL DEFAULT 0,
+                    read_at TIMESTAMP DEFAULT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """
+        )
+
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_notifications_recipient_created ON notifications (recipient_id, created_at DESC)"
+        )
+
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_notifications_recipient_unread ON notifications (recipient_id, is_read)"
+        )
+        
         conn.commit()
         print("Tables created")
         

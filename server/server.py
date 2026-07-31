@@ -43,6 +43,7 @@ from routes.friends import search_friends
 from routes.friends import get_relationship_status
 from routes.friends import get_mutual_friends
 from routes import user
+from routes import notifications
 
 app = Flask(__name__)
 
@@ -93,6 +94,8 @@ app.register_blueprint(search_friends.friend, url_prefix="/friends")
 app.register_blueprint(get_relationship_status.friend, url_prefix="/friends")
 app.register_blueprint(get_mutual_friends.friend, url_prefix="/friends")
 app.register_blueprint(user.user, url_prefix="/user")
+app.register_blueprint(notifications.notification, url_prefix="")
+
 
 #start server
 if __name__ == "__main__":
