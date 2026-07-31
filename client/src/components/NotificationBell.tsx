@@ -250,6 +250,7 @@ function NotificationBell() {
                     <div className="
                         absolute top-12 right-0
                         w-[280px] max-h-[360px] overflow-y-auto
+                        scrollbar-light dark:scrollbar-dark
                         rounded-lg border border-[var(--border)]
                         bg-[var(--form-bg)] shadow-[var(--card-shadow)]
                     ">
@@ -293,6 +294,7 @@ function NotificationBell() {
                     <div className="
                         absolute top-12 right-0
                         w-[240px] max-h-[320px] overflow-y-auto
+                        scrollbar-light dark:scrollbar-dark
                         rounded-lg border border-[var(--border)]
                         bg-[var(--form-bg)] shadow-[var(--card-shadow)]
                     ">
