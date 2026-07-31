@@ -7,7 +7,7 @@ type UseDelayedLoadingOptions = {
 
 export function useDelayedLoading(
     isLoading: boolean,
-    { showDelay = 150, minDuration = 400 }: UseDelayedLoadingOptions = {}
+    { showDelay = 80, minDuration = 800 }: UseDelayedLoadingOptions = {}
 ) {
     const [shouldShow, setShouldShow] = useState(false);
     const shownAtRef = useRef<number | null>(null);
