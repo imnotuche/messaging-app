@@ -26,7 +26,7 @@ export type ConversationSummary = {
     unread_count: number;
 };
 
-//normalizes a raw server row (0/1 ints for booleans) into our cache shape
+//normalizes a raw server row (0/1 ints for booleans, raw ints for ids) into our cache shape
 function toCachedMessage(raw: any): CachedMessage {
     return {
         id: raw.id,
@@ -58,15 +58,15 @@ type ChatStoreProps = {
 
     fetchConversations: () => Promise<void>;
     selectConversation: (conversationId: number, otherUserId: string) => Promise<void>;
-    openConversationWithUser: (targetUserId: string) => Promise<number>;
     closeConversation: () => void;
     loadMoreMessages: () => Promise<void>;
     sendMessage: (text: string) => Promise<void>;
     retryMessage: (clientId: string) => Promise<void>;
     setTyping: () => void;
+    openConversationWithUser: (targetUserId: string) => Promise<number>;
 
     //socket event handlers, wired from socket.ts same as presence/notification
-    handleNewMessage: (raw: any) => void;
+    handleNewMessage: (raw: any) => Promise<void>;
     handleMessageSent: (clientId: string, raw: any) => void;
     handleMessageFailed: (clientId: string) => void;
     handleConversationUpdate: (conversationId: number) => Promise<void>;
@@ -157,18 +157,6 @@ export const useChatStore = create<ChatStoreProps>()((set, get) => ({
         } catch (err) {
             console.error("Failed to mark conversation read:", err);
         }
-
-    },
-
-    //used by the message button on a profile, gets or creates the conversation then opens it
-    openConversationWithUser: async (targetUserId) => {
-
-        const response = await openConversation(targetUserId);
-        const conversationId = response.data.conversation_id;
-
-        await get().selectConversation(conversationId, targetUserId);
-
-        return conversationId;
 
     },
 
@@ -291,7 +279,19 @@ export const useChatStore = create<ChatStoreProps>()((set, get) => ({
 
     },
 
-    handleNewMessage: (raw) => {
+    //used by the message button on a profile, gets or creates the conversation then opens it
+    openConversationWithUser: async (targetUserId) => {
+
+        const response = await openConversation(targetUserId);
+        const conversationId = response.data.conversation_id;
+
+        await get().selectConversation(conversationId, targetUserId);
+
+        return conversationId;
+
+    },
+
+    handleNewMessage: async (raw) => {
 
         const message = toCachedMessage(raw);
         const { selectedConversationId } = get();
@@ -306,7 +306,20 @@ export const useChatStore = create<ChatStoreProps>()((set, get) => ({
             set((state) => ({ messages: [...state.messages, message] }));
 
             //chat is open right now, this counts as delivered immediately
-            getSocket()?.emit("message_delivered", { message_id: message.id, conversation_id: message.conversation_id });
+            const socket = getSocket();
+            socket?.emit("message_delivered", { message_id: message.id, conversation_id: message.conversation_id });
+
+            //the conversation is open and this message is already visible, count it as read right away too
+            try {
+                await markRead(message.conversation_id);
+                set((state) => ({
+                    conversations: state.conversations.map((c) =>
+                        c.conversation_id === message.conversation_id ? { ...c, unread_count: 0 } : c
+                    ),
+                }));
+            } catch (err) {
+                console.error("Failed to mark live message read:", err);
+            }
         }
 
     },
@@ -347,9 +360,13 @@ export const useChatStore = create<ChatStoreProps>()((set, get) => ({
             const response = await getConversationSummary(conversationId);
             const summary = response.data.summary;
 
+            //if this conversation is open right now, we own its read state locally, dont let a stale server count overwrite it
+            const isCurrentlyOpen = conversationId === get().selectedConversationId;
+            const unreadCount = isCurrentlyOpen ? 0 : summary.unread_count;
+
             set((state) => ({
                 conversations: state.conversations
-                    .map((c) => (c.conversation_id === conversationId ? { ...c, ...summary, conversation_id: conversationId } : c))
+                    .map((c) => (c.conversation_id === conversationId ? { ...c, ...summary, unread_count: unreadCount, conversation_id: conversationId } : c))
                     .sort((a, b) => new Date(b.last_message_time ?? 0).getTime() - new Date(a.last_message_time ?? 0).getTime()),
             }));
         } catch (err) {
@@ -402,7 +419,7 @@ export const useChatStore = create<ChatStoreProps>()((set, get) => ({
             const { new_messages, status_updates } = response.data;
 
             for (const raw of new_messages) {
-                get().handleNewMessage(raw);
+                await get().handleNewMessage(raw);
             }
 
             for (const update of status_updates) {
