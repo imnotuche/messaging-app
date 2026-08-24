@@ -95,6 +95,56 @@ def create_tables():
             "CREATE INDEX IF NOT EXISTS idx_notifications_recipient_unread ON notifications (recipient_id, is_read)"
         )
         
+                #conversations table, one row per friendship that has chatted
+        cursor.execute(
+            """
+                CREATE TABLE IF NOT EXISTS conversations(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    friendship_id INTEGER NOT NULL UNIQUE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (friendship_id) REFERENCES friendships(id)
+                )
+            """
+        )
+
+        #messages table, receiver_id duplicated from friendship for cheap indexing, not normalized purity
+        cursor.execute(
+            """
+                CREATE TABLE IF NOT EXISTS messages(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    conversation_id INTEGER NOT NULL,
+                    sender_id INTEGER NOT NULL,
+                    receiver_id INTEGER NOT NULL,
+                    message TEXT NOT NULL,
+                    client_id TEXT,
+                    is_received INTEGER NOT NULL DEFAULT 0,
+                    received_at TIMESTAMP DEFAULT NULL,
+                    is_read INTEGER NOT NULL DEFAULT 0,
+                    read_at TIMESTAMP DEFAULT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (conversation_id) REFERENCES conversations(id)
+                )
+            """
+        )
+
+        #cursor pagination needs id descending, autoincrement tracks time closely enough
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_messages_convo_id ON messages (conversation_id, id DESC)"
+        )
+
+        #unread count lookups per conversation
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_messages_convo_unread ON messages (conversation_id, receiver_id, is_read)"
+        )
+
+        #sync route filters by these two per user
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_messages_receiver_created ON messages (receiver_id, created_at)"
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_messages_sender_status ON messages (sender_id, received_at, read_at)"
+        )
+        
         conn.commit()
         print("Tables created")
         

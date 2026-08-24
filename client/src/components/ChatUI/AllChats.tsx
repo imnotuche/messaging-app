@@ -1,11 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Avatar from "../UI/Avatar";
 import Button from "../UI/Button";
+import { useChatStore } from "../../stores/chatStore";
+import { useFriendsStore } from "../../stores/friendStore";
+
+//formats an iso timestamp into a short clock time, matches the "3:41" style in the design
+function formatTime(isoString: string | null) {
+    if (!isoString) return "";
+    return new Date(isoString).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+}
 
 function AllChats(){
 
     const [chatListExpand, setChatListExpand] = useState (false);
     const [chatListVisible, setChatListVisible] = useState (false)
+
+    const conversations = useChatStore((state) => state.conversations);
+    const fetchConversations = useChatStore((state) => state.fetchConversations);
+    const selectConversation = useChatStore((state) => state.selectConversation);
+    const selectedConversationId = useChatStore((state) => state.selectedConversationId);
+    const friends = useFriendsStore((state) => state.friends);
+    const fetchFriends = useFriendsStore((state) => state.fetchFriends);
+
+    useEffect(() => {
+        fetchConversations();
+        if (friends.length === 0) fetchFriends();
+    }, [fetchConversations, fetchFriends]);
+
+    useEffect(() => {
+        fetchConversations();
+    }, [fetchConversations]);
 
     return (
 
@@ -108,107 +132,90 @@ function AllChats(){
                     my-12 md:my-16 p-3
                 ">
 
-                    <div className="
-                        w-full
-                    ">
+                    {conversations.map((conversation) => {
 
-                        <div className={`
-                            flex items-center
-                            w-[100%] h-16 
-                            md:mb-0 lg:mb-3
-                            ${chatListExpand ? '' : 'md:justify-center'}
-                        `}>
+                        const friend = friends.find((f) => String(f.id) === String(conversation.other_user_id));
+                        const isSelected = conversation.conversation_id === selectedConversationId;
 
-                            <Avatar imageClassName="
-                                h-9 md:h-10 lg:h-12
-                            " />
+                        return (
 
-                            <div className={`
-                                block lg:block 
-                                opacity-100 lg:opacity-100
-                                translate-x-0 lg:translate-x-0
-                                w-[70%] ml-2
-                                ${chatListExpand ? 'md:translate-x-0 opacity-100 md:block': 'md:translate-x-[500px] opacity-0 md:hidden'}
-                            `}>
+                            <div key={conversation.conversation_id}
+                                className={`
+                                    flex items-center cursor-pointer
+                                    w-[100%] h-16 
+                                    md:mb-0 lg:mb-3
+                                    ${chatListExpand ? '' : 'md:justify-center'}
+                                    ${isSelected ? 'bg-[var(--form-bg)] rounded-lg' : ''}
+                                `}
+                                onClick={() => {
+                                    selectConversation(conversation.conversation_id, String(conversation.other_user_id));
+                                    setChatListVisible(false);
+                                }}
+                            >
 
-                                <p className="
-                                    text-sm md:text-m 
-                                    font-semibold text-[var(--text)]
-                                    truncate
-                                    leading-5
-                                    mb-[2px]
-                                ">Nobody</p>
+                                <Avatar imageClassName="
+                                    h-9 md:h-10 lg:h-12
+                                " imageSrc={friend?.profile}/>
 
-                                <p className="
-                                    text-xs lg:text-sm 
-                                    font-medium text-[var(--muted)]
-                                    truncate
-                                    leading-5
-                                ">
+                                <div className={`
+                                    block lg:block 
+                                    opacity-100 lg:opacity-100
+                                    translate-x-0 lg:translate-x-0
+                                    w-[70%] ml-2
+                                    ${chatListExpand ? 'md:translate-x-0 opacity-100 md:block': 'md:translate-x-[500px] opacity-0 md:hidden'}
+                                `}>
 
-                                    <svg className="
-                                        hidden 
-                                        size-3 md:size-3.5 lg:size-4 ml-1
-                                    "
-                                        xmlns="http://www.w3.org/2000/svg" 
-                                        viewBox="0 0 24 24" 
-                                        fill="none" 
-                                        stroke="currentColor" 
-                                        stroke-width="2" stroke-linecap="round" 
-                                        stroke-linejoin="round" 
-                                    >
-                                        <path d="M18 6 7 17l-5-5"/>
-                                        <path d="m22 10-7.5 7.5L13 16"/>
-                                    </svg>
+                                    <p className="
+                                        text-sm md:text-m 
+                                        font-semibold text-[var(--text)]
+                                        truncate
+                                        leading-5
+                                        mb-[2px]
+                                    ">{friend?.name ?? "Unknown"}</p>
 
-                                    <svg className="
-                                        inline 
-                                        size-3.5 lg:size-4 mr-1
-                                    "
-                                        xmlns="http://www.w3.org/2000/svg" 
-                                        width="24" height="24" viewBox="0 0 24 24" 
-                                        fill="none" stroke="currentColor" 
-                                        stroke-width="2" 
-                                        stroke-linecap="round" 
-                                        stroke-linejoin="round"
-                                    >
-                                        <path d="M20 6 9 17l-5-5"/>
-                                    </svg>
+                                    <p className="
+                                        text-xs lg:text-sm 
+                                        font-medium text-[var(--muted)]
+                                        truncate
+                                        leading-5
+                                    ">
+                                        {conversation.last_message ?? "Say hello"}
+                                    </p>
 
-                                    i used to be somebodyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
-                                </p>
+                                </div>
 
-                            </div>
+                                <div className={`
+                                    flex lg:flex
+                                    flex-col flex-1
+                                    justify-center items-end 
+                                    opacity-100 lg:opacity-100
+                                    translate-x-0 lg:translate-x-0
+                                    ${chatListExpand ? 'md:translate-x-0 opacity-100 md:flex': 'md:translate-x-[500px] opacity-0 md:hidden'}
+                                `}>
+                                    <p className="
+                                        text-xs lg:text-sm 
+                                        font-semibold text-[var(--muted)]
+                                    ">{formatTime(conversation.last_message_time)}</p>
 
-                            <div className={`
-                                flex lg:flex
-                                flex-col flex-1
-                                justify-center items-end 
-                                opacity-100 lg:opacity-100
-                                translate-x-0 lg:translate-x-0
-                                ${chatListExpand ? 'md:translate-x-0 opacity-100 md:flex': 'md:translate-x-[500px] opacity-0 md:hidden'}
-                            `}>
-                                <p className="
-                                    text-xs lg:text-sm 
-                                    font-semibold text-[var(--muted)]
-                                ">3:41</p>
+                                    {conversation.unread_count > 0 && (
+                                        <div className="
+                                            bg-[var(--text)]
+                                            flex justify-center items-center
+                                            h-5 lg:h-6 aspect-square
+                                            pb-[2px] my-[2px]
+                                            rounded-full
+                                            text-xs lg:text-sm 
+                                            font-semibold text-[var(--bg)]
+                                        ">{conversation.unread_count}</div>
+                                    )}
 
-                                <div className="
-                                    bg-[var(--text)]
-                                    flex justify-center items-center
-                                    h-5 lg:h-6 aspect-square
-                                    pb-[2px] my-[2px]
-                                    rounded-full
-                                    text-xs lg:text-sm 
-                                    font-semibold text-[var(--bg)]
-                                ">2</div>
+                                </div>
 
                             </div>
 
-                        </div>
+                        );
 
-
-                    </div>
+                    })}
 
                 </div>
 

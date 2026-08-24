@@ -16,6 +16,7 @@ import { updateUserData } from "../services/userService";
 import { useCurrentProfileStore } from "./currentProfileStore";
 import { useSearchStore } from "./searchStore";
 import { useNotificationStore } from "./notificationStore";
+import { useChatStore } from "./chatStore";
 
 type authStoreProps = {
     isAuthenticated: boolean;
@@ -100,10 +101,12 @@ export const useAuthStore = create <authStoreProps> () ((set) => ({
             const currentProfile = useCurrentProfileStore.getState();
             const currentSearch = useSearchStore.getState();
             const notifications = useNotificationStore.getState();
+            const chat = useChatStore.getState();
 
             currentProfile.clearProfileData();
             currentSearch.clearSearch();
             notifications.reset();
+            chat.reset();
             set({
                 isAuthenticated: false,
                 user: {

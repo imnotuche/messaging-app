@@ -1,12 +1,17 @@
 import Avatar from "./Avatar";
 import { twMerge } from "tailwind-merge";
 
+type MessageStatus = "sending" | "sent" | "received" | "read" | "failed";
+
 type TextBubbleProps = {
     imageSrc?: string
     bubbleClassName?: string
     isMe: boolean
     isLast: boolean
     textContent?: string
+    time?: string
+    status?: MessageStatus
+    onClick?: () => void
 }
 
 type TypingBubbleProps = {
@@ -20,7 +25,12 @@ function TextBubble({
     isMe,
     isLast,
     textContent,
+    time,
+    status,
+    onClick,
 }: TextBubbleProps){
+
+    const failed = status === "failed";
 
     return (
 
@@ -40,7 +50,7 @@ function TextBubble({
                     hidden
                 " imageSrc={imageSrc}/>
 
-                <div className={twMerge(`
+                <div onClick={onClick} className={twMerge(`
                     relative
                     w-fit max-w-44 md:max-w-52 lg:max-w-80
                     rounded-lg p-3 pb-2 \r
@@ -55,6 +65,7 @@ function TextBubble({
 
                     <p className={`
                         m-auto
+                        break-words
                         ${isMe ? 'text-[var(--cta-text)]' : 'text-[var(--text)]'}
                     `}>{textContent}</p>
 
@@ -65,36 +76,42 @@ function TextBubble({
                         h-fit w-full
                     `}>
 
-                        <p>3:41</p>
+                        {/* tap-to-retry replaces the timestamp when a send fails */}
+                        <p className={failed ? 'text-red-400' : ''}>{failed ? 'Failed, tap to retry' : time}</p>
 
-                        <svg className="
-                            size-4 \r
-                            hidden ml-1
-                        "
-                            xmlns="http://www.w3.org/2000/svg" 
-                            viewBox="0 0 24 24" 
-                            fill="none" 
-                            stroke="currentColor" 
-                            stroke-width="2" stroke-linecap="round" 
-                            stroke-linejoin="round" 
-                        >
-                            <path d="M18 6 7 17l-5-5"/>
-                            <path d="m22 10-7.5 7.5L13 16"/>
-                        </svg>
+                        {/* ticks only apply to messages i sent, and only once theyve actually left the client */}
+                        {isMe && status === "sent" && (
+                            <svg className="
+                                size-[14px] lg:size-4
+                                ml-1
+                            "
+                                xmlns="http://www.w3.org/2000/svg" 
+                                width="24" height="24" viewBox="0 0 24 24" 
+                                fill="none" stroke="currentColor" 
+                                stroke-width="2" 
+                                stroke-linecap="round" 
+                                stroke-linejoin="round"
+                            >
+                                <path d="M20 6 9 17l-5-5"/>
+                            </svg>
+                        )}
 
-                        <svg className="
-                            size-[14px] lg:size-4
-                            ml-1
-                        "
-                            xmlns="http://www.w3.org/2000/svg" 
-                            width="24" height="24" viewBox="0 0 24 24" 
-                            fill="none" stroke="currentColor" 
-                            stroke-width="2" 
-                            stroke-linecap="round" 
-                            stroke-linejoin="round"
-                        >
-                            <path d="M20 6 9 17l-5-5"/>
-                        </svg>
+                        {isMe && (status === "received" || status === "read") && (
+                            <svg className={`
+                                size-4 ml-1
+                                ${status === "read" ? 'text-[var(--accent)]' : ''}
+                            `}
+                                xmlns="http://www.w3.org/2000/svg" 
+                                viewBox="0 0 24 24" 
+                                fill="none" 
+                                stroke="currentColor" 
+                                stroke-width="2" stroke-linecap="round" 
+                                stroke-linejoin="round" 
+                            >
+                                <path d="M18 6 7 17l-5-5"/>
+                                <path d="m22 10-7.5 7.5L13 16"/>
+                            </svg>
+                        )}
 
                     </div>
 

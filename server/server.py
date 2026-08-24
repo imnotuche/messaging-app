@@ -44,6 +44,12 @@ from routes.friends import get_relationship_status
 from routes.friends import get_mutual_friends
 from routes import user
 from routes import notifications
+from routes.chat import get_conversations
+from routes.chat import get_conversation_summary
+from routes.chat import get_messages
+from routes.chat import mark_read
+from routes.chat import sync
+from routes.chat import open_conversation
 
 app = Flask(__name__)
 
@@ -95,7 +101,12 @@ app.register_blueprint(get_relationship_status.friend, url_prefix="/friends")
 app.register_blueprint(get_mutual_friends.friend, url_prefix="/friends")
 app.register_blueprint(user.user, url_prefix="/user")
 app.register_blueprint(notifications.notification, url_prefix="")
-
+app.register_blueprint(get_conversations.chat, url_prefix="/chat")
+app.register_blueprint(get_conversation_summary.chat, url_prefix="/chat")
+app.register_blueprint(get_messages.chat, url_prefix="/chat")
+app.register_blueprint(mark_read.chat, url_prefix="/chat")
+app.register_blueprint(sync.chat, url_prefix="/chat")
+app.register_blueprint(open_conversation.chat, url_prefix="/chat")
 
 #start server
 if __name__ == "__main__":

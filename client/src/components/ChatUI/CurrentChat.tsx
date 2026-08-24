@@ -1,20 +1,136 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Avatar from "../UI/Avatar";
 import TextBubble from "../UI/TextBubble";
 import { TypingBubble } from "../UI/TextBubble";
 import Button from "../UI/Button";
 
+import { useChatStore } from "../../stores/chatStore";
+import { useFriendsStore } from "../../stores/friendStore";
+import { useAuthStore } from "../../stores/authStore";
+import { usePresenceStore } from "../../stores/presenceStore";
+import { subscribePresence, unsubscribePresence } from "../../socket";
+import type { CachedMessage } from "../../chatDb";
+
+//maps our internal message shape onto the four states TextBubble knows how to render
+function getMessageStatus(message: CachedMessage): "sending" | "sent" | "received" | "read" | "failed" {
+    if (message.status === "sending") return "sending";
+    if (message.status === "failed") return "failed";
+    if (message.is_read) return "read";
+    if (message.is_received) return "received";
+    return "sent";
+}
+
+function formatTime(isoString: string | null) {
+    if (!isoString) return "";
+    return new Date(isoString).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+}
+
 function CurrentChat(){
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    const [draft, setDraft] = useState("");
+
+    const selectedConversationId = useChatStore((state) => state.selectedConversationId);
+    const selectedOtherUserId = useChatStore((state) => state.selectedOtherUserId);
+    const messages = useChatStore((state) => state.messages);
+    const isLoadingMore = useChatStore((state) => state.isLoadingMore);
+    const hasMoreMessages = useChatStore((state) => state.hasMoreMessages);
+    const typingUserId = useChatStore((state) => state.typingUserId);
+    const loadMoreMessages = useChatStore((state) => state.loadMoreMessages);
+    const sendMessage = useChatStore((state) => state.sendMessage);
+    const retryMessage = useChatStore((state) => state.retryMessage);
+    const setTyping = useChatStore((state) => state.setTyping);
+
+    const friends = useFriendsStore((state) => state.friends);
+    const fetchFriends = useFriendsStore((state) => state.fetchFriends);
+    const currentUserId = useAuthStore((state) => state.user.user_id);
+    const presence = usePresenceStore((state) => state.statusMap);
+
+    const friend = friends.find((f) => String(f.id) === String(selectedOtherUserId));
+    const isOtherTyping = typingUserId === selectedOtherUserId;
+
+    //watch presence for whoever this chat is open with
+    useEffect(() => {
+        if (!selectedOtherUserId) return;
+
+        subscribePresence(selectedOtherUserId);
+        return () => unsubscribePresence(selectedOtherUserId);
+    }, [selectedOtherUserId]);
+
+    useEffect(() => {
+        if (friends.length === 0) fetchFriends();
+    }, [fetchFriends]);
+
+    //jump to the bottom whenever a new conversation is opened
+    useEffect(() => {
+        const el = scrollContainerRef.current;
+        if (el) el.scrollTop = el.scrollHeight;
+    }, [selectedConversationId]);
+
+    //stay pinned to the bottom on new messages, but only if already near it, dont yank someone reading history
+    useEffect(() => {
+        const el = scrollContainerRef.current;
+        if (!el) return;
+
+        const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 150;
+        if (nearBottom) el.scrollTop = el.scrollHeight;
+    }, [messages.length]);
 
     const handleInput = () => {
         const el = textareaRef.current;
         if (!el) return;
         el.style.height = "auto";
         el.style.height = el.scrollHeight + "px";
+        setTyping();
     };
+
+    const handleScroll = async () => {
+        const el = scrollContainerRef.current;
+        if (!el || isLoadingMore || !hasMoreMessages) return;
+
+        if (el.scrollTop < 100) {
+            const previousHeight = el.scrollHeight;
+            await loadMoreMessages();
+            //keep the viewport anchored on the same message after older ones are prepended above it
+            requestAnimationFrame(() => {
+                if (el) el.scrollTop = el.scrollHeight - previousHeight;
+            });
+        }
+    };
+
+    const handleSend = () => {
+        if (!draft.trim()) return;
+        sendMessage(draft);
+        setDraft("");
+
+        const el = textareaRef.current;
+        if (el) el.style.height = "auto";
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
+        }
+    };
+
+    if (!selectedConversationId) {
+        return (
+            <div className="
+                bg-[var(--bg)]
+                relative overflow-hidden
+                flex items-center justify-center
+                w-full md:flex-1 lg:w-[70%]
+                h-full rounded-xl
+                text-[var(--muted)] font-medium
+            ">
+                Select a chat to start messaging
+            </div>
+        );
+    }
 
     return (
 
@@ -43,7 +159,7 @@ function CurrentChat(){
                         hidden
                     " imageClassName="
                         h-9 md:h-10 lg:h-14
-                    "/>
+                    " imageSrc={friend?.profile}/>
 
                     <div>
 
@@ -52,20 +168,20 @@ function CurrentChat(){
                             text-sm lg:text-xl 
                             font-semibold
                             md:leading-5
-                        ">Somebody</p>
+                        ">{friend?.name ?? "Unknown"}</p>
 
                         <p className="
                             text-[var(--accent)]
                             text-xs lg:text-base 
                             font-medium
                             md:leading-4
-                        ">online</p>
+                        ">{presence[String(selectedOtherUserId ?? "")] === "online" ? "online" : "offline"}</p>
 
                     </div>
 
                 </div>
 
-                <div className="
+                <div ref={scrollContainerRef} onScroll={handleScroll} className="
                     overflow-y-auto scrollbar-light dark:scrollbar-dark
                     w-full flex-1
                     p-1 md:p-3 lg:p-5
@@ -75,31 +191,29 @@ function CurrentChat(){
                         w-full pt-20 md:pt-[85px] pb-20
                     ">
 
-                        <TextBubble isMe={false} isLast={false} textContent="
-                            some random text
-                        "/>
-                        <TextBubble isMe={false} isLast={true} textContent="
-                            some random text thats supposed to be really really long
-                        "/>
-                        <TextBubble isMe={true} isLast={false} textContent="
-                            another random text
-                        "/>
-                        <TextBubble isMe={true} isLast={true}textContent="
-                            another random text thats supposed to be really really long
-                        "/>
-                        <TextBubble isMe={false} isLast={false} textContent="
-                            some random text
-                        "/>
-                        <TextBubble isMe={false} isLast={true} textContent="
-                            some random text thats supposed to be really really long
-                        "/>
-                        <TextBubble isMe={true} isLast={false} textContent="
-                            another random text
-                        "/>
-                        <TextBubble isMe={true} isLast={true}textContent="
-                            another random text thats supposed to be really really long
-                        "/>
-                        <TypingBubble/>
+                        {messages.map((message, index) => {
+
+                            const isMe = message.sender_id === String(currentUserId);
+                            const nextMessage = messages[index + 1];
+                            const isLast = !nextMessage || nextMessage.sender_id !== message.sender_id;
+                            const status = isMe ? getMessageStatus(message) : undefined;
+
+                            return (
+                                <TextBubble
+                                    key={message.client_id}
+                                    imageSrc={friend?.profile}
+                                    isMe={isMe}
+                                    isLast={isLast}
+                                    textContent={message.message}
+                                    time={formatTime(message.created_at)}
+                                    status={status}
+                                    onClick={status === "failed" ? () => retryMessage(message.client_id) : undefined}
+                                />
+                            );
+
+                        })}
+
+                        {isOtherTyping && <TypingBubble imageSrc={friend?.profile}/>}
 
                     </div>
 
@@ -142,7 +256,10 @@ function CurrentChat(){
                             "   
                                 placeholder="Type a message"
                                 ref={textareaRef}
+                                value={draft}
+                                onChange={(e) => setDraft(e.target.value)}
                                 onInput={handleInput}
+                                onKeyDown={handleKeyDown}
                                 rows={1}
                             />
 
@@ -153,7 +270,9 @@ function CurrentChat(){
                             h-[33px] md:h-[35px] lg:h-[40px] w-[33px] md:w-[35px] lg:w-[40px]
                             rounded-[7px]
                             pl-[2px]
-                        ">
+                        "
+                            onClick={handleSend}
+                        >
 
                             <svg className="
                                 size-4 lg:size-5 text-[var(--cta-text)]
