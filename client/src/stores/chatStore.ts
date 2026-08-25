@@ -399,10 +399,10 @@ export const useChatStore = create<ChatStoreProps>()((set, get) => ({
 
     },
 
-    handleTypingStart: (userId) => set({ typingUserId: userId }),
+    handleTypingStart: (userId) => set({ typingUserId: String(userId) }),
 
     handleTypingStop: (userId) =>
-        set((state) => (state.typingUserId === userId ? { typingUserId: null } : state)),
+        set((state) => (state.typingUserId === String(userId) ? { typingUserId: null } : state)),
 
     syncOnReconnect: async () => {
 
