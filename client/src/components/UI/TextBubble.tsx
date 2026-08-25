@@ -99,7 +99,7 @@ function TextBubble({
                         {isMe && (status === "received" || status === "read") && (
                             <svg className={`
                                 size-4 ml-1
-                                ${status === "read" ? 'text-[var(--accent)]' : ''}
+                                ${status === "read" ? 'text-[#ffd60a]' : ''}
                             `}
                                 xmlns="http://www.w3.org/2000/svg" 
                                 viewBox="0 0 24 24" 

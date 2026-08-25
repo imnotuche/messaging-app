@@ -21,8 +21,7 @@ function getMessageStatus(message: CachedMessage): "sending" | "sent" | "receive
     return "sent";
 }
 
-function formatTime(isoString: string | null) {
-    if (!isoString) return "";
+function formatTime(isoString: string) {
     return new Date(isoString).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
@@ -36,6 +35,7 @@ function CurrentChat(){
     const selectedConversationId = useChatStore((state) => state.selectedConversationId);
     const selectedOtherUserId = useChatStore((state) => state.selectedOtherUserId);
     const messages = useChatStore((state) => state.messages);
+    const isLoadingMessages = useChatStore((state) => state.isLoadingMessages);
     const isLoadingMore = useChatStore((state) => state.isLoadingMore);
     const hasMoreMessages = useChatStore((state) => state.hasMoreMessages);
     const typingUserId = useChatStore((state) => state.typingUserId);
@@ -52,6 +52,11 @@ function CurrentChat(){
     const friend = friends.find((f) => String(f.id) === String(selectedOtherUserId));
     const isOtherTyping = typingUserId === selectedOtherUserId;
 
+    //friends list might not be populated if this screen was reached without visiting a friends page first
+    useEffect(() => {
+        if (friends.length === 0) fetchFriends();
+    }, [fetchFriends]);
+
     //watch presence for whoever this chat is open with
     useEffect(() => {
         if (!selectedOtherUserId) return;
@@ -60,15 +65,20 @@ function CurrentChat(){
         return () => unsubscribePresence(selectedOtherUserId);
     }, [selectedOtherUserId]);
 
+    //leaving the chat screen entirely, not just switching conversations, means this one is no longer "open"
     useEffect(() => {
-        if (friends.length === 0) fetchFriends();
-    }, [fetchFriends]);
+        return () => {
+            useChatStore.getState().closeConversation();
+        };
+    }, []);
 
-    //jump to the bottom whenever a new conversation is opened
+    //scroll to bottom once messages actually finish loading for the opened conversation, not the instant its selected
     useEffect(() => {
-        const el = scrollContainerRef.current;
-        if (el) el.scrollTop = el.scrollHeight;
-    }, [selectedConversationId]);
+        if (!isLoadingMessages) {
+            const el = scrollContainerRef.current;
+            if (el) el.scrollTop = el.scrollHeight;
+        }
+    }, [selectedConversationId, isLoadingMessages]);
 
     //stay pinned to the bottom on new messages, but only if already near it, dont yank someone reading history
     useEffect(() => {

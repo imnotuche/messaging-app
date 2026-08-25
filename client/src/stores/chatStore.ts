@@ -64,6 +64,7 @@ type ChatStoreProps = {
     retryMessage: (clientId: string) => Promise<void>;
     setTyping: () => void;
     openConversationWithUser: (targetUserId: string) => Promise<number>;
+    restoreLastConversation: () => void;
 
     //socket event handlers, wired from socket.ts same as presence/notification
     handleNewMessage: (raw: any) => Promise<void>;
@@ -110,6 +111,7 @@ export const useChatStore = create<ChatStoreProps>()((set, get) => ({
     selectConversation: async (conversationId, otherUserId) => {
 
         const otherUserIdStr = String(otherUserId);
+        localStorage.setItem("chat:lastOpen", JSON.stringify({ conversationId, otherUserId: otherUserIdStr }));
         const socket = getSocket();
         const previous = get().selectedConversationId;
 
@@ -156,6 +158,25 @@ export const useChatStore = create<ChatStoreProps>()((set, get) => ({
             }));
         } catch (err) {
             console.error("Failed to mark conversation read:", err);
+        }
+
+    },
+
+    //called once on mount by AllChats, reopens whatever was last open if nothing is currently selected
+    restoreLastConversation: () => {
+
+        if (get().selectedConversationId) return; //already have something open, dont override it
+
+        const raw = localStorage.getItem("chat:lastOpen");
+        if (!raw) return;
+
+        try {
+            const { conversationId, otherUserId } = JSON.parse(raw);
+            if (conversationId && otherUserId) {
+                get().selectConversation(conversationId, otherUserId);
+            }
+        } catch (err) {
+            console.error("Failed to restore last conversation:", err);
         }
 
     },

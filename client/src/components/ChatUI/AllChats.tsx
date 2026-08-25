@@ -4,7 +4,7 @@ import Button from "../UI/Button";
 import { useChatStore } from "../../stores/chatStore";
 import { useFriendsStore } from "../../stores/friendStore";
 
-//formats an iso timestamp into a short clock time, matches the "3:41" style in the design
+//formats an iso timestamp into 24h clock time
 function formatTime(isoString: string | null) {
     if (!isoString) return "";
     return new Date(isoString).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
@@ -18,6 +18,7 @@ function AllChats(){
     const conversations = useChatStore((state) => state.conversations);
     const fetchConversations = useChatStore((state) => state.fetchConversations);
     const selectConversation = useChatStore((state) => state.selectConversation);
+    const restoreLastConversation = useChatStore((state) => state.restoreLastConversation);
     const selectedConversationId = useChatStore((state) => state.selectedConversationId);
     const friends = useFriendsStore((state) => state.friends);
     const fetchFriends = useFriendsStore((state) => state.fetchFriends);
@@ -25,11 +26,8 @@ function AllChats(){
     useEffect(() => {
         fetchConversations();
         if (friends.length === 0) fetchFriends();
-    }, [fetchConversations, fetchFriends]);
-
-    useEffect(() => {
-        fetchConversations();
-    }, [fetchConversations]);
+        restoreLastConversation();
+    }, [fetchConversations, fetchFriends, restoreLastConversation]);
 
     return (
 
@@ -161,7 +159,7 @@ function AllChats(){
                                     block lg:block 
                                     opacity-100 lg:opacity-100
                                     translate-x-0 lg:translate-x-0
-                                    w-[70%] ml-2
+                                    flex-1 min-w-0 ml-2
                                     ${chatListExpand ? 'md:translate-x-0 opacity-100 md:block': 'md:translate-x-[500px] opacity-0 md:hidden'}
                                 `}>
 
@@ -186,8 +184,7 @@ function AllChats(){
 
                                 <div className={`
                                     flex lg:flex
-                                    flex-col flex-1
-                                    justify-center items-end 
+                                    flex-col shrink-0 items-end 
                                     opacity-100 lg:opacity-100
                                     translate-x-0 lg:translate-x-0
                                     ${chatListExpand ? 'md:translate-x-0 opacity-100 md:flex': 'md:translate-x-[500px] opacity-0 md:hidden'}
